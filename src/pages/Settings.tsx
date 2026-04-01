@@ -13,7 +13,7 @@ import { Copy, Plus, Trash2, ArrowLeft, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { useInstances } from "@/contexts/InstanceContext";
 import type { TokenRecord } from "@/lib/datastore";
-import { getAppOrigin, getRegistrationPageUrl } from "@/lib/utils";
+import { getAppOrigin, getRegistrationPageUrl, getRegistrationApiUrl } from "@/lib/utils";
 
 const Settings = () => {
   const navigate = useNavigate();
