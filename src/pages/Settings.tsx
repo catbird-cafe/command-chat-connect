@@ -29,6 +29,8 @@ const Settings = () => {
   const navigate = useNavigate();
   const hostName = localStorage.getItem("chat-host-name") || "";
   const clients = useRealtimePresence();
+  const supabase = useSupabaseClient();
+  const { activeInstance } = useInstances();
 
   const [tokens, setTokens] = useState<TokenRecord[]>([]);
   const [loading, setLoading] = useState(true);
