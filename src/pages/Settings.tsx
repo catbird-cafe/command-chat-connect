@@ -174,7 +174,7 @@ const Settings = () => {
                       </Button>
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      CLI usage: <code className="bg-muted px-1 rounded">curl -X POST {registerUrl} -H "Content-Type: application/json" -d '{`{"token":"${newlyCreatedToken}"}`}'</code>
+                      Register at <code className="bg-muted px-1 rounded">{registerUrl}</code> or use the CLI: <code className="bg-muted px-1 rounded">REGISTER_URL="{registerUrl}" node cli-client.cjs {newlyCreatedToken.slice(0, 8)}...</code>
                     </p>
                   </div>
                 )}
