@@ -88,6 +88,10 @@ export function ClientSidebar({ clients, activeClient, onSelectClient }: ClientS
                   <Settings className="h-4 w-4 mr-2" />
                   Settings
                 </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/docs")} className="cursor-pointer">
+                  <Book className="h-4 w-4 mr-2" />
+                  Documentation
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive">
                   <LogOut className="h-4 w-4 mr-2" />
