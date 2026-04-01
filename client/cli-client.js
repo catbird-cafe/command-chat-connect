@@ -86,16 +86,23 @@ async function getCredentials() {
     body: JSON.stringify({ token: arg }),
   });
 
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    console.error(`[init] Registration failed: ${err.error || res.statusText}`);
+  const text = await res.text();
+  let raw;
+  try {
+    raw = JSON.parse(text);
+  } catch {
+    console.error("[init] Registration response was not JSON:", text.slice(0, 400));
     process.exit(1);
   }
 
-  const raw = await res.json();
+  if (!res.ok) {
+    console.error(`[init] Registration failed: ${raw?.error || raw?.message || res.statusText}`);
+    process.exit(1);
+  }
+
   const creds = normalizeCreds(raw);
   if (!creds?.url || !creds?.key) {
-    console.error("[init] Registration response missing url/key (unexpected shape)");
+    console.error("[init] Registration response missing url/key. Body:", text.slice(0, 800));
     process.exit(1);
   }
   fs.writeFileSync(CREDS_FILE, JSON.stringify(creds, null, 2));

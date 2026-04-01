@@ -22,7 +22,16 @@ Deno.serve(async (req) => {
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const anonKey = Deno.env.get("SUPABASE_PUBLISHABLE_KEY")!;
+    /** Hosted Edge Functions inject `SUPABASE_ANON_KEY`; `SUPABASE_PUBLISHABLE_KEY` is optional/manual. */
+    const anonKey =
+      Deno.env.get("SUPABASE_ANON_KEY") ?? Deno.env.get("SUPABASE_PUBLISHABLE_KEY");
+
+    if (!anonKey) {
+      return new Response(
+        JSON.stringify({ error: "Server misconfiguration: missing anon key for client credentials" }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
 
     const supabase = createClient(supabaseUrl, serviceRoleKey);
 

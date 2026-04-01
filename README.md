@@ -15,7 +15,7 @@ Configure **Supabase** in `.env` using `VITE_*` variables (for example `VITE_SUP
 
 End users install with **`curl`**; the script creates **`./client`** in their current directory and does not use this repository. With the dev server or production build running, this app serves **`/install-cli.sh`** and **`/cli-client/*`**. See **`client/README.md`**.
 
-Maintainers: **`npm run sync-cli-public`** copies **`client/*`** and the remote installer into **`public/`** (runs before **`npm run dev`** and **`npm run build`**).
+Maintainers: **`npm run sync-cli-public`** copies **`client/*`** and the remote installer into **`public/`** (runs before **`npm run dev`** and **`npm run build`**). Those **`public/cli-client/`** and **`public/install-cli.sh`** artifacts are **gitignored**—only **`client/`** and **`scripts/install-cli-remote.sh`** are source.
 
 ## Docs
 

@@ -9,6 +9,7 @@ import { registerPostProxyPlugin } from "./vite/register-post-proxy-plugin";
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
   const supabaseUrl = env.VITE_SUPABASE_URL ?? "";
+  const supabaseAnonKey = env.VITE_SUPABASE_PUBLISHABLE_KEY ?? "";
 
   return {
     server: {
@@ -19,7 +20,7 @@ export default defineConfig(({ mode }) => {
       },
     },
     plugins: [
-      registerPostProxyPlugin(supabaseUrl),
+      registerPostProxyPlugin(supabaseUrl, supabaseAnonKey),
       react(),
       mode === "development" && componentTagger(),
     ].filter(Boolean),

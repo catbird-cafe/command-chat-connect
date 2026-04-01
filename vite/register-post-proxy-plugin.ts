@@ -5,7 +5,7 @@ import type { Connect, Plugin } from "vite";
  * Supabase directly from JS. The CLI POSTs to the same URL users see (`/register`), so we
  * forward that request to the Edge Function.
  */
-export function registerPostProxyPlugin(supabaseUrl: string): Plugin {
+export function registerPostProxyPlugin(supabaseUrl: string, supabaseAnonKey: string): Plugin {
   const middleware: Connect.NextHandleFunction = (req, res, next) => {
     const pathname = req.url?.split("?")[0] ?? "";
     if (req.method !== "POST" || pathname !== "/register") {
@@ -32,11 +32,17 @@ export function registerPostProxyPlugin(supabaseUrl: string): Plugin {
         try {
           const body = Buffer.concat(chunks);
           const target = new URL("/functions/v1/register", base.replace(/\/$/, ""));
+          const headers: Record<string, string> = {
+            "Content-Type": req.headers["content-type"] || "application/json",
+          };
+          const anon = supabaseAnonKey?.trim();
+          if (anon) {
+            headers.Authorization = `Bearer ${anon}`;
+            headers.apikey = anon;
+          }
           const r = await fetch(target.href, {
             method: "POST",
-            headers: {
-              "Content-Type": req.headers["content-type"] || "application/json",
-            },
+            headers,
             body,
           });
           const text = await r.text();

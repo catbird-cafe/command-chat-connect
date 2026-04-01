@@ -19,7 +19,7 @@ This repository is a **single-page application**: **Vite + React + TypeScript**,
 
 ## CLI
 
-- **End users**: **`curl \<origin\>/install-cli.sh | bash -s -- \<origin\>`** creates **`./client`** in the shell’s current directory; no repo clone. The app serves **`/install-cli.sh`** and **`/cli-client/*`** from **`public/`** (synced from **`client/`** via **`npm run sync-cli-public`** on **`predev`** / **`prebuild`**).
+- **End users**: **`curl \<origin\>/install-cli.sh | bash -s -- \<origin\>`** creates **`./client`** in the shell’s current directory; no repo clone. The app serves **`/install-cli.sh`** and **`/cli-client/*`** from **`public/`**, produced by **`npm run sync-cli-public`** (**`predev`** / **`prebuild`**). Source is **`client/`** + **`scripts/install-cli-remote.sh`**; **`public/cli-client/`** and **`public/install-cli.sh`** are gitignored outputs.
 
 ## Conventions
 
