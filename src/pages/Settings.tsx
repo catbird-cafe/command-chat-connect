@@ -18,8 +18,7 @@ const Settings = () => {
   const navigate = useNavigate();
   const hostName = localStorage.getItem("chat-host-name") || "";
   const clients = useRealtimePresence();
-  const supabase = useSupabaseClient();
-  const { activeInstance } = useInstances();
+  const { activeInstance, store } = useInstances();
 
   const [tokens, setTokens] = useState<TokenRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -35,48 +34,50 @@ const Settings = () => {
   }, [hostName, navigate]);
 
   const fetchTokens = async () => {
+    if (!store) return;
     setLoading(true);
-    const { data } = await supabase
-      .from("client_tokens")
-      .select("*")
-      .order("created_at", { ascending: false });
-    if (Array.isArray(data)) setTokens(data);
+    try {
+      const data = await store.listTokens();
+      setTokens(data);
+    } catch {
+      toast.error("Failed to load tokens");
+    }
     setLoading(false);
   };
 
   const createToken = async () => {
+    if (!store) return;
     setCreating(true);
     const token = Array.from(crypto.getRandomValues(new Uint8Array(32)))
       .map((b) => b.toString(16).padStart(2, "0"))
       .join("");
 
-    const record: Record<string, unknown> = {
-      token,
-      token_type: tokenType,
-      label: label.trim() || null,
-      expires_at: tokenType === "expiry" && expiresAt ? new Date(expiresAt).toISOString() : null,
-    };
-
-    const { error } = await supabase.from("client_tokens").insert(record);
-
-    if (error) {
-      toast.error("Failed to create token");
-    } else {
+    try {
+      await store.createToken({
+        token,
+        token_type: tokenType,
+        label: label.trim() || null,
+        expires_at: tokenType === "expiry" && expiresAt ? new Date(expiresAt).toISOString() : null,
+      });
       toast.success("Token created");
       setNewlyCreatedToken(token);
       setLabel("");
       setExpiresAt("");
       fetchTokens();
+    } catch {
+      toast.error("Failed to create token");
     }
     setCreating(false);
   };
 
   const deleteToken = async (id: string) => {
-    const { error } = await supabase.from("client_tokens").delete().eq("id", id);
-    if (error) toast.error("Failed to delete");
-    else {
+    if (!store) return;
+    try {
+      await store.deleteToken(id);
       toast.success("Token deleted");
       fetchTokens();
+    } catch {
+      toast.error("Failed to delete");
     }
   };
 

@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { useInstances } from "@/contexts/InstanceContext";
 
 const Register = () => {
-  const { activeInstance } = useInstances();
+  const { store } = useInstances();
   const [token, setToken] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{ client_id: string; url: string; key: string } | null>(null);
@@ -16,7 +16,7 @@ const Register = () => {
 
   const handleRegister = async () => {
     if (!token.trim()) return;
-    if (!activeInstance) {
+    if (!store) {
       setError("No backend configured");
       return;
     }
@@ -26,21 +26,10 @@ const Register = () => {
     setResult(null);
 
     try {
-      const res = await fetch(`${activeInstance.url}/functions/v1/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token: token.trim() }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.error || "Registration failed");
-      } else {
-        setResult(data);
-      }
-    } catch {
-      setError("Could not reach the registration endpoint");
+      const data = await store.register(token.trim());
+      setResult(data);
+    } catch (err: any) {
+      setError(err?.message || "Registration failed");
     } finally {
       setLoading(false);
     }
