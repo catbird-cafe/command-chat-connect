@@ -1,7 +1,9 @@
-import { Monitor, Circle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Monitor, Circle, Settings, LogOut, ChevronUp } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -9,6 +11,14 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import type { ClientInfo } from "@/hooks/useRealtimePresence";
 
 interface ClientSidebarProps {
@@ -18,6 +28,14 @@ interface ClientSidebarProps {
 }
 
 export function ClientSidebar({ clients, activeClient, onSelectClient }: ClientSidebarProps) {
+  const navigate = useNavigate();
+  const hostName = localStorage.getItem("chat-host-name") || "Host";
+
+  const handleLogout = () => {
+    localStorage.removeItem("chat-host-name");
+    navigate("/");
+  };
+
   return (
     <Sidebar collapsible="icon">
       <SidebarContent>
@@ -49,6 +67,37 @@ export function ClientSidebar({ clients, activeClient, onSelectClient }: ClientS
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton className="cursor-pointer">
+                  <Avatar className="h-6 w-6">
+                    <AvatarFallback className="text-xs bg-primary text-primary-foreground">
+                      {hostName.charAt(0).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="truncate">{hostName}</span>
+                  <ChevronUp className="ml-auto h-4 w-4" />
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent side="top" align="start" className="w-48">
+                <DropdownMenuItem onClick={() => navigate("/settings")} className="cursor-pointer">
+                  <Settings className="h-4 w-4 mr-2" />
+                  Settings
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive">
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sign out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
     </Sidebar>
   );
 }

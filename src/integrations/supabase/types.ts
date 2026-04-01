@@ -14,7 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      client_tokens: {
+        Row: {
+          client_id: string | null
+          created_at: string
+          expires_at: string | null
+          id: string
+          label: string | null
+          token: string
+          token_type: string
+          used: boolean
+          used_at: string | null
+        }
+        Insert: {
+          client_id?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          label?: string | null
+          token?: string
+          token_type?: string
+          used?: boolean
+          used_at?: string | null
+        }
+        Update: {
+          client_id?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          label?: string | null
+          token?: string
+          token_type?: string
+          used?: boolean
+          used_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

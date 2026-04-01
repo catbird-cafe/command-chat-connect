@@ -5,8 +5,6 @@ import { ClientSidebar } from "@/components/ClientSidebar";
 import { ChatView } from "@/components/ChatView";
 import { useRealtimePresence } from "@/hooks/useRealtimePresence";
 import { useRealtimeChat } from "@/hooks/useRealtimeChat";
-import { Button } from "@/components/ui/button";
-import { LogOut } from "lucide-react";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -19,11 +17,6 @@ const Dashboard = () => {
     if (!hostName) navigate("/");
   }, [hostName, navigate]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("chat-host-name");
-    navigate("/");
-  };
-
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
@@ -33,17 +26,8 @@ const Dashboard = () => {
           onSelectClient={setActiveClient}
         />
         <div className="flex-1 flex flex-col">
-          <header className="h-12 flex items-center justify-between border-b px-4">
-            <div className="flex items-center gap-2">
-              <SidebarTrigger />
-              <span className="text-sm font-medium text-muted-foreground">
-                Logged in as <span className="text-foreground font-semibold">{hostName}</span>
-              </span>
-            </div>
-            <Button variant="ghost" size="sm" onClick={handleLogout}>
-              <LogOut className="h-4 w-4 mr-1" />
-              Logout
-            </Button>
+          <header className="h-12 flex items-center border-b px-4">
+            <SidebarTrigger />
           </header>
           <ChatView
             clientName={activeClient}
