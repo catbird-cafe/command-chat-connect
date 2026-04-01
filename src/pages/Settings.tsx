@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useRealtimePresence } from "@/hooks/useRealtimePresence";
 import { Copy, Plus, Trash2, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { useSupabaseClient, useInstances } from "@/contexts/InstanceContext";
 
 interface TokenRecord {
   id: string;
@@ -29,6 +29,8 @@ const Settings = () => {
   const navigate = useNavigate();
   const hostName = localStorage.getItem("chat-host-name") || "";
   const clients = useRealtimePresence();
+  const supabase = useSupabaseClient();
+  const { activeInstance } = useInstances();
 
   const [tokens, setTokens] = useState<TokenRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -92,8 +94,7 @@ const Settings = () => {
     toast.success("Copied to clipboard");
   };
 
-  const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-  const registerUrl = `https://${projectId}.supabase.co/functions/v1/register`;
+  const registerUrl = activeInstance ? `${activeInstance.url}/functions/v1/register` : "";
 
   return (
     <SidebarProvider>

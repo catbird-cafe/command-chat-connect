@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useSupabaseClient } from "@/contexts/InstanceContext";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 
 export interface ChatMessage {
@@ -10,18 +10,17 @@ export interface ChatMessage {
 }
 
 export function useRealtimeChat(clientName: string | null, hostName: string) {
+  const supabase = useSupabaseClient();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const channelRef = useRef<RealtimeChannel | null>(null);
   const prevClient = useRef<string | null>(null);
 
   useEffect(() => {
-    // Clean up previous channel
     if (channelRef.current) {
       supabase.removeChannel(channelRef.current);
       channelRef.current = null;
     }
 
-    // Reset messages when switching clients
     if (prevClient.current !== clientName) {
       setMessages([]);
       prevClient.current = clientName;
@@ -44,7 +43,7 @@ export function useRealtimeChat(clientName: string | null, hostName: string) {
       supabase.removeChannel(channel);
       channelRef.current = null;
     };
-  }, [clientName]);
+  }, [clientName, supabase]);
 
   const sendMessage = useCallback(
     (text: string) => {
@@ -60,7 +59,6 @@ export function useRealtimeChat(clientName: string | null, hostName: string) {
         event: "message",
         payload: msg,
       });
-      // Add to local state immediately (broadcast doesn't echo back)
       setMessages((prev) => [...prev, msg]);
     },
     [clientName, hostName]
