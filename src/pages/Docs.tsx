@@ -261,7 +261,7 @@ The registration page is at \`${registerUrl}\`.
 \`\`\`bash
 curl -fsSL ${appOrigin}/install-cli.sh | bash -s -- ${appOrigin}
 cd client
-REGISTER_URL="${registerUrl}" node cli-client.js <token>
+REGISTER_URL="${registerApiUrl}" node cli-client.js <token>
 \`\`\`
 
 **After credentials are saved**:
