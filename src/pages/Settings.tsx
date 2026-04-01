@@ -110,6 +110,31 @@ const Settings = () => {
           </header>
 
           <div className="flex-1 overflow-auto p-6 max-w-3xl space-y-6">
+            {/* Install the Client */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Install the Client</CardTitle>
+                <CardDescription>
+                  Run this from any folder to create a <code className="text-xs font-mono bg-muted px-1 rounded">client/</code> directory with the CLI.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="relative group rounded-md border bg-background">
+                  <pre className="text-xs p-3 pr-10 font-mono overflow-x-auto whitespace-pre-wrap break-words text-foreground leading-relaxed">{`curl -fsSL ${appOrigin}/install-cli.sh | bash -s -- ${appOrigin}`}</pre>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="absolute top-1.5 right-1.5 h-7 w-7 opacity-60 hover:opacity-100"
+                    onClick={() => copyToClipboard(`curl -fsSL ${appOrigin}/install-cli.sh | bash -s -- ${appOrigin}`)}
+                    title="Copy install command"
+                  >
+                    <Copy className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Generate Token */}
             <Card>
               <CardHeader>
                 <CardTitle>Generate Client Token</CardTitle>
@@ -172,40 +197,23 @@ const Settings = () => {
                         <Copy className="h-3.5 w-3.5" />
                       </Button>
                     </div>
-                    <div className="px-4 pb-2">
-                      <p className="text-xs text-muted-foreground mb-2">
-                        Install &amp; register — run from any folder:
-                      </p>
-                    </div>
-                    <div className="relative group mx-3 mb-3 rounded-md border bg-background">
-                      <pre className="text-xs p-3 pr-10 font-mono overflow-x-auto whitespace-pre-wrap break-words text-foreground leading-relaxed">{`curl -fsSL ${appOrigin}/install-cli.sh | bash -s -- ${appOrigin}\ncd client\nREGISTER_URL="${registerApiUrl}" node cli-client.js ${newlyCreatedToken}`}</pre>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="absolute top-1.5 right-1.5 h-7 w-7 opacity-60 hover:opacity-100"
-                        onClick={() =>
-                          copyToClipboard(
-                            `curl -fsSL ${appOrigin}/install-cli.sh | bash -s -- ${appOrigin}\ncd client\nREGISTER_URL="${registerApiUrl}" node cli-client.js ${newlyCreatedToken}`,
-                          )
-                        }
-                        title="Copy install commands"
+                    <div className="px-4 pb-3 flex items-center gap-3">
+                      <a
+                        href={`/register?token=${encodeURIComponent(newlyCreatedToken)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 text-xs text-primary underline hover:text-primary/80"
                       >
-                        <Copy className="h-3.5 w-3.5" />
-                      </Button>
-                    </div>
-                    <div className="px-4 pb-3">
-                      <p className="text-xs text-muted-foreground">
-                        Or register in the browser:{" "}
-                        <a href={registerUrl} className="text-primary underline break-all">
-                          {registerUrl}
-                        </a>
-                      </p>
+                        <ExternalLink className="h-3 w-3" />
+                        Register in browser
+                      </a>
                     </div>
                   </div>
                 )}
               </CardContent>
             </Card>
 
+            {/* Existing Tokens */}
             <Card>
               <CardHeader>
                 <CardTitle>Client Tokens</CardTitle>
@@ -218,71 +226,66 @@ const Settings = () => {
                   <p className="text-sm text-muted-foreground">No tokens yet</p>
                 ) : (
                   <div className="space-y-3">
-                    {tokens.map((t) => {
-                      const installCmd = `curl -fsSL ${appOrigin}/install-cli.sh | bash -s -- ${appOrigin}\ncd client\nREGISTER_URL="${registerApiUrl}" node cli-client.js ${t.token}`;
-                      return (
-                        <div
-                          key={t.id}
-                          className="p-3 rounded-lg border bg-card space-y-2"
-                        >
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2 flex-wrap min-w-0">
-                              <span className="text-sm font-medium truncate">
-                                {t.label || "Unlabeled"}
-                              </span>
-                              <Badge variant={t.used ? "secondary" : "default"}>
-                                {t.used ? "Used" : "Available"}
-                              </Badge>
-                              <Badge variant="outline">{t.token_type === "one_time" ? "One-time" : "Expiry"}</Badge>
-                            </div>
-                            <Button size="icon" variant="ghost" onClick={() => deleteToken(t.id)} title="Delete token">
-                              <Trash2 className="h-4 w-4 text-destructive" />
-                            </Button>
+                    {tokens.map((t) => (
+                      <div
+                        key={t.id}
+                        className="p-3 rounded-lg border bg-card space-y-2"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2 flex-wrap min-w-0">
+                            <span className="text-sm font-medium truncate">
+                              {t.label || "Unlabeled"}
+                            </span>
+                            <Badge variant={t.used ? "secondary" : "default"}>
+                              {t.used ? "Used" : "Available"}
+                            </Badge>
+                            <Badge variant="outline">{t.token_type === "one_time" ? "One-time" : "Expiry"}</Badge>
                           </div>
-                          <div className="relative group rounded-md border bg-background">
-                            <pre className="text-xs p-2 pr-9 font-mono break-all whitespace-pre-wrap text-foreground select-all">{t.token}</pre>
-                            <Button
-                              size="icon"
-                              variant="ghost"
-                              className="absolute top-1 right-1 h-7 w-7 opacity-60 hover:opacity-100"
-                              onClick={() => copyToClipboard(t.token)}
-                              title="Copy token"
-                            >
-                              <Copy className="h-3.5 w-3.5" />
-                            </Button>
-                          </div>
-                          {!t.used && (
-                            <div className="relative group rounded-md border bg-background">
-                              <pre className="text-xs p-2 pr-9 font-mono break-words whitespace-pre-wrap text-muted-foreground leading-relaxed">{installCmd}</pre>
-                              <Button
-                                size="icon"
-                                variant="ghost"
-                                className="absolute top-1 right-1 h-7 w-7 opacity-60 hover:opacity-100"
-                                onClick={() => copyToClipboard(installCmd)}
-                                title="Copy install commands"
-                              >
-                                <Copy className="h-3.5 w-3.5" />
-                              </Button>
-                            </div>
-                          )}
-                          {t.client_id && (
-                            <p className="text-xs text-muted-foreground">
-                              Client ID: <span className="font-mono">{t.client_id}</span>
-                            </p>
-                          )}
-                          {t.expires_at && (
-                            <p className="text-xs text-muted-foreground">
-                              Expires: {new Date(t.expires_at).toLocaleString()}
-                            </p>
-                          )}
+                          <Button size="icon" variant="ghost" onClick={() => deleteToken(t.id)} title="Delete token">
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                          </Button>
                         </div>
-                      );
-                    })}
+                        <div className="relative group rounded-md border bg-background">
+                          <pre className="text-xs p-2 pr-9 font-mono break-all whitespace-pre-wrap text-foreground select-all">{t.token}</pre>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="absolute top-1 right-1 h-7 w-7 opacity-60 hover:opacity-100"
+                            onClick={() => copyToClipboard(t.token)}
+                            title="Copy token"
+                          >
+                            <Copy className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
+                        {!t.used && (
+                          <a
+                            href={`/register?token=${encodeURIComponent(t.token)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 text-xs text-primary underline hover:text-primary/80"
+                          >
+                            <ExternalLink className="h-3 w-3" />
+                            Register in browser
+                          </a>
+                        )}
+                        {t.client_id && (
+                          <p className="text-xs text-muted-foreground">
+                            Client ID: <span className="font-mono">{t.client_id}</span>
+                          </p>
+                        )}
+                        {t.expires_at && (
+                          <p className="text-xs text-muted-foreground">
+                            Expires: {new Date(t.expires_at).toLocaleString()}
+                          </p>
+                        )}
+                      </div>
+                    ))}
                   </div>
                 )}
               </CardContent>
             </Card>
 
+            {/* Registration Page link */}
             <Card>
               <CardHeader>
                 <CardTitle>Registration Page</CardTitle>
