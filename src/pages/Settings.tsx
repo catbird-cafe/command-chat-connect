@@ -196,10 +196,12 @@ const Settings = () => {
                   <p className="text-sm text-muted-foreground">No tokens yet</p>
                 ) : (
                   <div className="space-y-3">
-                    {tokens.map((t) => (
+                    {tokens.map((t) => {
+                      const isNew = t.token === newlyCreatedToken;
+                      return (
                       <div
                         key={t.id}
-                        className="p-3 rounded-lg border bg-card space-y-2"
+                        className={`p-3 rounded-lg border space-y-2 transition-colors ${isNew ? "border-primary/50 bg-primary/5 ring-1 ring-primary/20" : "bg-card"}`}
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2 flex-wrap min-w-0">
