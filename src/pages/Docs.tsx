@@ -25,9 +25,8 @@ const docs = [
 │  └──────┬──────┘  └────┬─────┘  └─────┬──────┘ │
 │         │              │              │         │
 │         ▼              ▼              ▼         │
-│    Supabase Realtime          Edge Functions     │
-│    (Presence + Broadcast)     (manage-tokens,    │
-│                                register)         │
+│    Realtime            Realtime       Registration│
+│    (Presence)          (Broadcast)    Endpoint    │
 └─────────────────────────────────────────────────┘
            ▲                        ▲
            │  WebSocket             │  HTTPS
@@ -35,28 +34,28 @@ const docs = [
 ┌──────────┴────────────────────────┴──────────────┐
 │                  CLI Client                       │
 │  1. POST /register → gets creds                   │
-│  2. Joins "chat-lobby" (presence)                  │
-│  3. Joins "chat:<id>" (broadcast)                  │
+│  2. Joins lobby (presence)                         │
+│  3. Joins chat channel (broadcast)                 │
 │  4. stdin → send, stdout ← receive                 │
 └───────────────────────────────────────────────────┘
 \`\`\`
 
 ## Components
 
-| Component | Tech | Purpose |
-|-----------|------|---------|
-| Web Dashboard | React + Vite + Tailwind | Host UI for managing clients and chatting |
-| CLI Client | Node.js + supabase-js + ws | Terminal-based chat participant |
-| Realtime Presence | Supabase Realtime | Tracks online CLI clients |
-| Realtime Broadcast | Supabase Realtime | Per-client chat messages |
-| Edge Functions | Deno | Token management & registration |
+| Component | Purpose |
+|-----------|---------|
+| Web Dashboard | Host UI for managing clients and chatting |
+| CLI Client | Terminal-based chat participant |
+| Realtime Presence | Tracks online CLI clients |
+| Realtime Broadcast | Per-client chat messages |
+| Registration Endpoint | Token exchange for client credentials |
 
 ## Data Flow
 
 1. Host logs in with a display name
 2. Host generates a registration token in Settings
-3. CLI client calls \`/register\` with the token
-4. CLI receives \`{ supabase_url, supabase_anon_key, client_id }\`
+3. CLI client calls the registration endpoint with the token
+4. CLI receives connection credentials + a client_id
 5. CLI connects to Realtime → appears in sidebar
 6. Host clicks client → opens broadcast channel
 7. Both sides exchange messages
@@ -83,11 +82,11 @@ Go to **Settings** → fill in label, type, and expiry → **Generate Token**. C
 ### 2. Register CLI Client
 
 \`\`\`bash
-REGISTER_URL="https://<project_id>.supabase.co/functions/v1/register" \\
-  node cli-client.js <token>
+REGISTER_URL="<registration_url>" \\
+  node cli-client.cjs <token>
 \`\`\`
 
-The client POSTs:
+The registration URL is shown in **Settings** under "Registration Endpoint". The client POSTs:
 
 \`\`\`json
 { "token": "<64-char-hex-string>" }
@@ -98,12 +97,12 @@ The client POSTs:
 \`\`\`json
 {
   "client_id": "a1b2c3d4",
-  "supabase_url": "https://...",
-  "supabase_anon_key": "eyJ..."
+  "url": "...",
+  "key": "..."
 }
 \`\`\`
 
-Credentials are saved to \`~/.chat-client-creds.json\`.
+Credentials are saved to \`~/.chat-client-creds.json\`. The client uses these automatically on subsequent runs.
 
 ### 4. Subsequent Runs
 
@@ -206,46 +205,19 @@ CLI Client                         Web Dashboard
     id: "api-reference",
     title: "API Reference",
     icon: Code,
-    content: `## Edge Functions
+    content: `## Registration Endpoint
 
-### POST \`/functions/v1/register\`
+### POST \`/register\`
 
-Exchange a token for credentials.
+Exchange a token for connection credentials.
 
 **Request**: \`{ "token": "string" }\`
 
-**200**: \`{ "client_id", "supabase_url", "supabase_anon_key" }\`
+**200**: \`{ "client_id", "url", "key" }\`
 
 **Errors**: 400 (missing token), 401 (invalid/used/expired)
 
----
-
-### GET \`/functions/v1/manage-tokens\`
-
-List all tokens. Returns array of token records.
-
----
-
-### POST \`/functions/v1/manage-tokens\`
-
-Create a token.
-
-**Request**:
-\`\`\`json
-{
-  "label": "optional string",
-  "token_type": "one_time | expiry",
-  "expires_at": "ISO 8601 (if expiry)"
-}
-\`\`\`
-
-**201**: Returns the created token record.
-
----
-
-### DELETE \`/functions/v1/manage-tokens\`
-
-Delete a token. **Request**: \`{ "id": "uuid" }\`
+The registration URL is displayed in **Settings** → **Registration Endpoint**.
 
 ---
 
@@ -457,8 +429,6 @@ const Docs = () => {
   }, [activeDoc]);
 
   const currentDoc = activeDoc ? docs.find(d => d.id === activeDoc) : null;
-  const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-  const docsApiUrl = `https://${projectId}.supabase.co/functions/v1/alldocs`;
 
   const copyText = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -529,37 +499,11 @@ const Docs = () => {
             ) : (
               <div className="space-y-6">
                 <p className="text-muted-foreground leading-relaxed">
-                  This server is self-documenting. You can read the docs here in the browser, or fetch them programmatically to build a client.
+                  Use this documentation to understand the system and build a compatible client. Browse the sections in the sidebar.
                 </p>
 
                 <div className="space-y-3">
-                  <h2 className="text-xl font-bold text-foreground">Programmatic Access</h2>
-                  <p className="text-muted-foreground text-sm">
-                    Agents and scripts can fetch structured documentation from the API:
-                  </p>
-
-                  <div className="space-y-2">
-                    {[
-                      { label: "All docs (JSON)", cmd: `curl ${docsApiUrl}` },
-                      { label: "All docs (Markdown)", cmd: `curl "${docsApiUrl}?format=markdown"` },
-                      { label: "Single section", cmd: `curl "${docsApiUrl}?section=registration"` },
-                    ].map((item) => (
-                      <div key={item.label} className="rounded-lg border bg-card p-3">
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-xs font-medium text-muted-foreground">{item.label}</span>
-                          <button onClick={() => copyText(item.cmd)} className="text-muted-foreground hover:text-foreground">
-                            <Copy className="h-3.5 w-3.5" />
-                          </button>
-                        </div>
-                        <code className="text-xs font-mono text-foreground break-all">{item.cmd}</code>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="space-y-3">
                   <h2 className="text-xl font-bold text-foreground">Available Sections</h2>
-                  <p className="text-muted-foreground text-sm">Click any section in the sidebar, or use <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">?section=id</code> in the API:</p>
                   <div className="grid gap-2 sm:grid-cols-2">
                     {docs.map((doc) => (
                       <button
@@ -570,7 +514,6 @@ const Docs = () => {
                         <doc.icon className="h-5 w-5 text-primary shrink-0" />
                         <div>
                           <span className="text-sm font-medium text-foreground">{doc.title}</span>
-                          <p className="text-xs text-muted-foreground font-mono">?section={doc.id}</p>
                         </div>
                       </button>
                     ))}
@@ -581,8 +524,9 @@ const Docs = () => {
                   <h2 className="text-xl font-bold text-foreground">Quick Start</h2>
                   <ol className="list-decimal list-inside space-y-2 text-muted-foreground text-sm">
                     <li>Generate a registration token in <strong className="text-foreground">Settings</strong></li>
-                    <li>Run <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">REGISTER_URL=&lt;url&gt; node cli-client.js &lt;token&gt;</code></li>
-                    <li>Credentials are saved — subsequent runs just need <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">node cli-client.js</code></li>
+                    <li>Copy the <strong className="text-foreground">Registration URL</strong> from Settings</li>
+                    <li>Run <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">REGISTER_URL=&lt;url&gt; node cli-client.cjs &lt;token&gt;</code></li>
+                    <li>Credentials are saved — subsequent runs just need <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">node cli-client.cjs</code></li>
                     <li>Start chatting!</li>
                   </ol>
                 </div>
