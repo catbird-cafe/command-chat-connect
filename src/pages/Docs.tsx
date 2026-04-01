@@ -82,11 +82,11 @@ Go to **Settings** → fill in label, type, and expiry → **Generate Token**. C
 ### 2. Register CLI Client
 
 \`\`\`bash
-REGISTER_URL="https://<project_id>.supabase.co/functions/v1/register" \\
-  node cli-client.js <token>
+REGISTER_URL="<registration_url>" \\
+  node cli-client.cjs <token>
 \`\`\`
 
-The client POSTs:
+The registration URL is shown in **Settings** under "Registration Endpoint". The client POSTs:
 
 \`\`\`json
 { "token": "<64-char-hex-string>" }
@@ -97,12 +97,12 @@ The client POSTs:
 \`\`\`json
 {
   "client_id": "a1b2c3d4",
-  "supabase_url": "https://...",
-  "supabase_anon_key": "eyJ..."
+  "url": "...",
+  "key": "..."
 }
 \`\`\`
 
-Credentials are saved to \`~/.chat-client-creds.json\`.
+Credentials are saved to \`~/.chat-client-creds.json\`. The client uses these automatically on subsequent runs.
 
 ### 4. Subsequent Runs
 
