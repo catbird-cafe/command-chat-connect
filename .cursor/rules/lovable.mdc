@@ -1,0 +1,22 @@
+---
+description: Lovable.dev origin — stack, tooling, and workflow expectations for this repo
+alwaysApply: true
+---
+
+# Lovable.dev project
+
+This repository is a **[Lovable](https://lovable.dev)** project: the app was created and is typically edited through Lovable’s AI builder, with optional local git workflows.
+
+## Tooling
+
+- **Vite + React + TypeScript**; UI uses **shadcn/ui**-style components under `src/components/ui/`.
+- **Development-only**: `lovable-tagger` (`componentTagger` in `vite.config.ts`) runs in dev mode for Lovable’s component tagging. Do not remove it without a reason; it is inert in production builds (`mode === "development"`).
+
+## Deployment and URLs
+
+- Production URL is whatever **Lovable hosting** (or your connected host) assigns. Use **`getRegistrationPageUrl()`** from `src/lib/utils.ts` (or `window.location.origin` + `/register`) for the registration link — same URL as the **`/register`** page in the browser. **Settings** and **`/docs`** both use that helper so copy-paste matches what users see on the registration page.
+- **Environment**: Supabase and other secrets are usually set in the Lovable project **Secrets / env** as `VITE_*` variables; keep using `import.meta.env.VITE_*` in the client.
+
+## Conventions
+
+- Prefer matching existing patterns in `src/` (routing in `App.tsx`, data layer under `src/lib/`) rather than introducing a parallel stack unless the task requires it.

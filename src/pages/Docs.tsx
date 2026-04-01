@@ -1,13 +1,14 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Book, FileText, Network, Key, Code, Copy, Terminal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { cn } from "@/lib/utils";
+import { cn, getRegistrationPageUrl } from "@/lib/utils";
 import { toast } from "sonner";
 
-// Inline the docs content so the app is self-documenting without a build step
-const docs = [
+/** Inline docs with the deployed app URL (same origin as the dashboard). */
+function buildDocs(registerUrl: string) {
+  return [
   {
     id: "architecture",
     title: "Architecture",
@@ -81,10 +82,10 @@ Go to **Settings** → fill in label, type, and expiry → **Generate Token**. C
 
 ### 2. Register CLI Client
 
-Go to the **/register** page on this server and paste your token, or use the CLI:
+Go to **${registerUrl}** and paste your token, or use the CLI:
 
 \`\`\`bash
-REGISTER_URL="<this-server>/register" \\
+REGISTER_URL="${registerUrl}" \\
   node cli-client.cjs <token>
 \`\`\`
 
@@ -219,7 +220,7 @@ Exchange a token for connection credentials.
 
 **Errors**: 400 (missing token), 401 (invalid/used/expired)
 
-The registration page is at \`/register\` on this server.
+The registration page is at \`${registerUrl}\`.
 
 ---
 
@@ -245,7 +246,7 @@ The registration page is at \`/register\` on this server.
 
 ## CLI Client
 
-**First run**: \`REGISTER_URL=<this-server>/register node cli-client.cjs <token>\`
+**First run**: \`REGISTER_URL=${registerUrl} node cli-client.cjs <token>\`
 
 **After**: \`node cli-client.cjs\`
 
@@ -256,6 +257,8 @@ The registration page is at \`/register\` on this server.
 **Creds file**: \`~/.chat-client-creds.json\``,
   },
 ];
+}
+
 
 // Simple markdown-to-JSX renderer (handles code blocks, tables, headers, bold, inline code)
 function renderMarkdown(md: string) {
@@ -412,6 +415,8 @@ const Docs = () => {
   const navigate = useNavigate();
   const [activeDoc, setActiveDoc] = useState<string | null>(null);
   const hostName = localStorage.getItem("chat-host-name");
+  const registerUrl = useMemo(() => getRegistrationPageUrl(), []);
+  const docs = useMemo(() => buildDocs(registerUrl), [registerUrl]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [showBackToTop, setShowBackToTop] = useState(false);
 
@@ -526,8 +531,19 @@ const Docs = () => {
                   <h2 className="text-xl font-bold text-foreground">Quick Start</h2>
                   <ol className="list-decimal list-inside space-y-2 text-muted-foreground text-sm">
                     <li>Generate a registration token in <strong className="text-foreground">Settings</strong></li>
-                    <li>Go to <strong className="text-foreground">/register</strong> and paste the token, or use the CLI</li>
-                    <li>Run <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">REGISTER_URL=&lt;this-server&gt;/register node cli-client.cjs &lt;token&gt;</code></li>
+                    <li>
+                      Go to{" "}
+                      <a href={registerUrl} className="text-primary underline font-medium break-all">
+                        {registerUrl}
+                      </a>{" "}
+                      and paste the token, or use the CLI
+                    </li>
+                    <li>
+                      Run{" "}
+                      <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono break-all">
+                        {`REGISTER_URL="${registerUrl}" node cli-client.cjs <token>`}
+                      </code>
+                    </li>
                     <li>Credentials are saved — subsequent runs just need <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">node cli-client.cjs</code></li>
                     <li>Start chatting!</li>
                   </ol>

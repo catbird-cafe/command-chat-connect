@@ -13,6 +13,7 @@ import { Copy, Plus, Trash2, ArrowLeft, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { useInstances } from "@/contexts/InstanceContext";
 import type { TokenRecord } from "@/lib/datastore";
+import { getRegistrationPageUrl } from "@/lib/utils";
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -86,7 +87,7 @@ const Settings = () => {
     toast.success("Copied to clipboard");
   };
 
-  const registerUrl = `${window.location.origin}/register`;
+  const registerUrl = getRegistrationPageUrl();
 
   return (
     <SidebarProvider>
