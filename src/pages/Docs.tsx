@@ -429,8 +429,6 @@ const Docs = () => {
   }, [activeDoc]);
 
   const currentDoc = activeDoc ? docs.find(d => d.id === activeDoc) : null;
-  const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-  const docsApiUrl = `https://${projectId}.supabase.co/functions/v1/alldocs`;
 
   const copyText = (text: string) => {
     navigator.clipboard.writeText(text);
