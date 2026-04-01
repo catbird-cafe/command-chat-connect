@@ -180,36 +180,6 @@ const Settings = () => {
                   Generate Token
                 </Button>
 
-                {newlyCreatedToken && (
-                  <div className="mt-4 rounded-lg border border-primary/30 bg-primary/5 overflow-hidden">
-                    <div className="px-4 pt-3 pb-2">
-                      <p className="text-sm font-medium text-primary">New token created — copy it now!</p>
-                    </div>
-                    <div className="relative group mx-3 mb-3 rounded-md border bg-background">
-                      <pre className="text-xs p-3 pr-10 font-mono overflow-x-auto whitespace-pre-wrap break-all text-foreground leading-relaxed select-all">{newlyCreatedToken}</pre>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="absolute top-1.5 right-1.5 h-7 w-7 opacity-60 hover:opacity-100"
-                        onClick={() => copyToClipboard(newlyCreatedToken)}
-                        title="Copy token"
-                      >
-                        <Copy className="h-3.5 w-3.5" />
-                      </Button>
-                    </div>
-                    <div className="px-4 pb-3 flex items-center gap-3">
-                      <a
-                        href={`/register?token=${encodeURIComponent(newlyCreatedToken)}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 text-xs text-primary underline hover:text-primary/80"
-                      >
-                        <ExternalLink className="h-3 w-3" />
-                        Register in browser
-                      </a>
-                    </div>
-                  </div>
-                )}
               </CardContent>
             </Card>
 
