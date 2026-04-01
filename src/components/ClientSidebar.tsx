@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Monitor, Circle, Settings, LogOut, ChevronUp, Book } from "lucide-react";
+import { Monitor, Circle, Settings, LogOut, ChevronUp, Book, Server } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -19,6 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useInstances } from "@/contexts/InstanceContext";
 import type { ClientInfo } from "@/hooks/useRealtimePresence";
 
 interface ClientSidebarProps {
@@ -30,6 +31,7 @@ interface ClientSidebarProps {
 export function ClientSidebar({ clients, activeClient, onSelectClient }: ClientSidebarProps) {
   const navigate = useNavigate();
   const hostName = localStorage.getItem("chat-host-name") || "Host";
+  const { activeInstance } = useInstances();
 
   const handleLogout = () => {
     localStorage.removeItem("chat-host-name");
@@ -39,6 +41,14 @@ export function ClientSidebar({ clients, activeClient, onSelectClient }: ClientS
   return (
     <Sidebar collapsible="icon">
       <SidebarContent>
+        {activeInstance && (
+          <div className="px-3 py-2 border-b border-sidebar-border">
+            <div className="flex items-center gap-2 text-xs text-sidebar-foreground/60">
+              <Server className="h-3 w-3" />
+              <span className="truncate">{activeInstance.name}</span>
+            </div>
+          </div>
+        )}
         <SidebarGroup>
           <SidebarGroupLabel className="flex items-center gap-2">
             <Monitor className="h-4 w-4" />
@@ -84,6 +94,10 @@ export function ClientSidebar({ clients, activeClient, onSelectClient }: ClientS
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent side="top" align="start" className="w-48">
+                <DropdownMenuItem onClick={() => navigate("/instances")} className="cursor-pointer">
+                  <Server className="h-4 w-4 mr-2" />
+                  Instances
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate("/settings")} className="cursor-pointer">
                   <Settings className="h-4 w-4 mr-2" />
                   Settings
