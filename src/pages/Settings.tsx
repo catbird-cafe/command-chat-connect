@@ -258,15 +258,29 @@ const Settings = () => {
                           </Button>
                         </div>
                         {!t.used && (
-                          <a
-                            href={`/register?token=${encodeURIComponent(t.token)}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 text-xs text-primary underline hover:text-primary/80"
-                          >
-                            <ExternalLink className="h-3 w-3" />
-                            Register in browser
-                          </a>
+                          <>
+                            <div className="relative group rounded-md border bg-background">
+                              <pre className="text-xs p-2 pr-9 font-mono break-words whitespace-pre-wrap text-muted-foreground leading-relaxed">{`curl -fsSL ${appOrigin}/install-cli.sh | bash -s -- ${appOrigin}\ncd client\nREGISTER_URL="${registerApiUrl}" node cli-client.js ${t.token}`}</pre>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="absolute top-1 right-1 h-7 w-7 opacity-60 hover:opacity-100"
+                                onClick={() => copyToClipboard(`curl -fsSL ${appOrigin}/install-cli.sh | bash -s -- ${appOrigin}\ncd client\nREGISTER_URL="${registerApiUrl}" node cli-client.js ${t.token}`)}
+                                title="Copy install commands"
+                              >
+                                <Copy className="h-3.5 w-3.5" />
+                              </Button>
+                            </div>
+                            <a
+                              href={`/register?token=${encodeURIComponent(t.token)}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 text-xs text-primary underline hover:text-primary/80"
+                            >
+                              <ExternalLink className="h-3 w-3" />
+                              Register in browser
+                            </a>
+                          </>
                         )}
                         {t.client_id && (
                           <p className="text-xs text-muted-foreground">
