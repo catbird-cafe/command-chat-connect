@@ -219,7 +219,7 @@ Exchange a token for connection credentials.
 
 **Errors**: 400 (missing token), 401 (invalid/used/expired)
 
-The registration URL is displayed in **Settings** → **Registration Endpoint**.
+The registration page is at \`/register\` on this server.
 
 ---
 
