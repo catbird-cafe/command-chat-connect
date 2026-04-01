@@ -4,6 +4,7 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
+// componentTagger runs only in development (Lovable tooling); inert in production builds.
 export default defineConfig(({ mode }) => ({
   server: {
     host: "::",

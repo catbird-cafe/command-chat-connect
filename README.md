@@ -1,16 +1,15 @@
 # Command Chat Connect
 
-Vite + React + TypeScript app with Supabase realtime chat and a CLI client.
+Vite + React + TypeScript SPA with Supabase realtime chat and a CLI client.
 
-## Lovable.dev
+## Development
 
-This repo comes from **[Lovable](https://lovable.dev)** (AI-assisted app builder). Typical workflow:
+- **Install**: `npm install`
+- **Dev server**: `npm run dev` — Vite listens on port **8080** (see `vite.config.ts`). The **`lovable-tagger`** Vite plugin stays enabled in development so the project stays compatible with **[Lovable](https://lovable.dev)** sync and tooling (it does nothing in production builds).
 
-- Edit in Lovable’s UI and/or clone and work locally with git.
-- **Dev**: `npm install` then `npm run dev` (Vite uses port **8080** per `vite.config.ts`).
-- **Lovable dev plugin**: `lovable-tagger` runs only in development to support Lovable tooling; it does not affect production builds.
+Playwright: if you use Lovable’s agent Playwright package, it is picked up automatically; otherwise the repo includes a default Playwright config for local runs.
 
-Configure **Supabase** (`VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, etc.) in your Lovable project environment (or `.env` locally). The hosted app URL for links like `/register` and `/docs` is always the deployment origin — the UI derives it at runtime rather than hardcoding a domain.
+Configure **Supabase** in `.env` using `VITE_*` variables (for example `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`). Links like `/register` and `/docs` use the current deployment origin at runtime rather than a hardcoded domain.
 
 ## Docs
 
