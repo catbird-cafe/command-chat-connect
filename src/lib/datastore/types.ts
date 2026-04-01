@@ -24,12 +24,15 @@ export interface CreateTokenInput {
 
 export interface RegisterResult {
   client_id: string;
-  relay_url: string;
-  endpoints: {
-    send: string;
-    listen: string;
-    presence: string;
+  ws: {
+    url: string;
+    key: string;
+    channels: {
+      lobby: string;
+      direct: string;
+    };
   };
+  relay: string;
 }
 
 export interface DataStore {

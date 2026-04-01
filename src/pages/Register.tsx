@@ -81,28 +81,20 @@ const Register = () => {
                 Registered successfully
               </div>
 
-              {[
-                { label: "Client ID", value: result.client_id },
-                { label: "Relay URL", value: result.relay_url },
-                { label: "Send", value: result.endpoints.send },
-                { label: "Listen", value: result.endpoints.listen },
-                { label: "Presence", value: result.endpoints.presence },
-              ].map((field) => (
-                <div key={field.label} className="space-y-1">
-                  <span className="text-xs text-muted-foreground">{field.label}</span>
-                  <div className="flex items-center gap-2">
-                    <code className="flex-1 text-xs bg-background p-2 rounded font-mono break-all border">
-                      {field.value}
-                    </code>
-                    <button onClick={() => copy(field.value)} className="text-muted-foreground hover:text-foreground shrink-0">
-                      <Copy className="h-3.5 w-3.5" />
-                    </button>
-                  </div>
-                </div>
-              ))}
+              <div className="relative">
+                <pre className="text-xs bg-background p-3 rounded font-mono border overflow-x-auto whitespace-pre">
+                  {JSON.stringify(result, null, 2)}
+                </pre>
+                <button
+                  onClick={() => copy(JSON.stringify(result, null, 2))}
+                  className="absolute top-2 right-2 text-muted-foreground hover:text-foreground"
+                >
+                  <Copy className="h-3.5 w-3.5" />
+                </button>
+              </div>
 
-              <p className="text-xs text-muted-foreground mt-2">
-                Save these endpoints — your client uses them to send and receive messages.
+              <p className="text-xs text-muted-foreground">
+                This is your client configuration. See the <a href="/docs" className="text-primary underline">API docs</a> for usage.
               </p>
             </div>
           )}
