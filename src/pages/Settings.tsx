@@ -47,29 +47,34 @@ const Settings = () => {
 
   const fetchTokens = async () => {
     setLoading(true);
-    const { data } = await supabase.functions.invoke("manage-tokens", {
-      method: "GET",
-    });
+    const { data } = await supabase
+      .from("client_tokens")
+      .select("*")
+      .order("created_at", { ascending: false });
     if (Array.isArray(data)) setTokens(data);
     setLoading(false);
   };
 
   const createToken = async () => {
     setCreating(true);
-    const body: Record<string, string> = { token_type: tokenType };
-    if (label.trim()) body.label = label.trim();
-    if (tokenType === "expiry" && expiresAt) body.expires_at = new Date(expiresAt).toISOString();
+    const token = Array.from(crypto.getRandomValues(new Uint8Array(32)))
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
 
-    const { data, error } = await supabase.functions.invoke("manage-tokens", {
-      method: "POST",
-      body,
-    });
+    const record: Record<string, unknown> = {
+      token,
+      token_type: tokenType,
+      label: label.trim() || null,
+      expires_at: tokenType === "expiry" && expiresAt ? new Date(expiresAt).toISOString() : null,
+    };
+
+    const { error } = await supabase.from("client_tokens").insert(record);
 
     if (error) {
       toast.error("Failed to create token");
     } else {
       toast.success("Token created");
-      setNewlyCreatedToken(data.token);
+      setNewlyCreatedToken(token);
       setLabel("");
       setExpiresAt("");
       fetchTokens();
@@ -78,10 +83,7 @@ const Settings = () => {
   };
 
   const deleteToken = async (id: string) => {
-    const { error } = await supabase.functions.invoke("manage-tokens", {
-      method: "DELETE",
-      body: { id },
-    });
+    const { error } = await supabase.from("client_tokens").delete().eq("id", id);
     if (error) toast.error("Failed to delete");
     else {
       toast.success("Token deleted");
