@@ -505,11 +505,21 @@ const Docs = () => {
             <h1 className="text-lg font-bold text-foreground">{currentDoc.title}</h1>
           </div>
         </header>
-        <ScrollArea className="flex-1">
+        <div ref={scrollRef} onScroll={handleScroll} className="flex-1 overflow-y-auto">
           <div className="max-w-3xl p-6">
             {renderMarkdown(currentDoc.content)}
           </div>
-        </ScrollArea>
+        </div>
+
+        {showBackToTop && (
+          <button
+            onClick={scrollToTop}
+            className="absolute bottom-6 right-6 h-10 w-10 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center hover:bg-primary/90 transition-opacity animate-in fade-in zoom-in-50 duration-200"
+            title="Back to top"
+          >
+            <ArrowLeft className="h-4 w-4 rotate-90" />
+          </button>
+        )}
       </div>
     </div>
   );
