@@ -121,12 +121,18 @@ export function InstanceProvider({ children }: { children: ReactNode }) {
     return createClient(activeInstance.url, activeInstance.anonKey);
   }, [activeInstance?.id, activeInstance?.url, activeInstance?.anonKey]);
 
+  const store = useMemo(() => {
+    if (!client || !activeInstance) return null;
+    return new SupabaseDataStore(client, activeInstance.url);
+  }, [client, activeInstance?.url]);
+
   return (
     <InstanceContext.Provider
       value={{
         instances,
         activeInstance,
         client,
+        store,
         addInstance,
         updateInstance,
         removeInstance,
