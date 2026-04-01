@@ -19,17 +19,19 @@ export function useRealtimePresence() {
     channel
       .on("presence", { event: "sync" }, () => {
         const state = channel.presenceState();
+        console.log("[presence] sync state:", JSON.stringify(state));
         const allClients: ClientInfo[] = [];
         for (const key of Object.keys(state)) {
           for (const presence of state[key]) {
-            const p = presence as unknown as { name: string; joinedAt: string; type: string };
+            const p = presence as unknown as Record<string, string>;
             if (p.type === "cli") {
-              allClients.push({ name: p.name, joinedAt: p.joinedAt });
+              allClients.push({ name: p.name, joinedAt: p.joinedAt ?? new Date().toISOString() });
             }
           }
         }
         // deduplicate by name
         const unique = Array.from(new Map(allClients.map((c) => [c.name, c])).values());
+        console.log("[presence] clients:", unique);
         setClients(unique);
       })
       .subscribe();
