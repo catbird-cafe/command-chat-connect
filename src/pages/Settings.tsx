@@ -47,9 +47,10 @@ const Settings = () => {
 
   const fetchTokens = async () => {
     setLoading(true);
-    const { data } = await supabase.functions.invoke("manage-tokens", {
-      method: "GET",
-    });
+    const { data } = await supabase
+      .from("client_tokens")
+      .select("*")
+      .order("created_at", { ascending: false });
     if (Array.isArray(data)) setTokens(data);
     setLoading(false);
   };
