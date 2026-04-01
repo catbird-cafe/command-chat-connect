@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard.tsx";
 import Settings from "./pages/Settings.tsx";
 import Instances from "./pages/Instances.tsx";
 import Docs from "./pages/Docs.tsx";
+import Register from "./pages/Register.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
