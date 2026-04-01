@@ -1,8 +1,10 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Book, FileText, Network, Key, Code } from "lucide-react";
+import { ArrowLeft, Book, FileText, Network, Key, Code, Copy, Terminal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 // Inline the docs content so the app is self-documenting without a build step
