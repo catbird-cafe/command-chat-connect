@@ -96,7 +96,7 @@ const Settings = () => {
     toast.success("Copied to clipboard");
   };
 
-  const registerUrl = activeInstance ? `${activeInstance.url}/functions/v1/register` : "";
+  const registerUrl = `${window.location.origin}/register`;
 
   return (
     <SidebarProvider>
