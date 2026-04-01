@@ -6,12 +6,13 @@ import { Label } from "@/components/ui/label";
 import { Copy, CheckCircle, AlertCircle, Terminal } from "lucide-react";
 import { toast } from "sonner";
 import { useInstances } from "@/contexts/InstanceContext";
+import type { RegisterResult } from "@/lib/datastore";
 
 const Register = () => {
   const { store } = useInstances();
   const [token, setToken] = useState("");
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<{ client_id: string; url: string; key: string } | null>(null);
+  const [result, setResult] = useState<RegisterResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleRegister = async () => {
