@@ -265,7 +265,8 @@ const Settings = () => {
                           </p>
                         )}
                       </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </CardContent>
