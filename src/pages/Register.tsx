@@ -83,8 +83,10 @@ const Register = () => {
 
               {[
                 { label: "Client ID", value: result.client_id },
-                { label: "URL", value: result.url },
-                { label: "Key", value: result.key },
+                { label: "Relay URL", value: result.relay_url },
+                { label: "Send", value: result.endpoints.send },
+                { label: "Listen", value: result.endpoints.listen },
+                { label: "Presence", value: result.endpoints.presence },
               ].map((field) => (
                 <div key={field.label} className="space-y-1">
                   <span className="text-xs text-muted-foreground">{field.label}</span>
@@ -100,7 +102,7 @@ const Register = () => {
               ))}
 
               <p className="text-xs text-muted-foreground mt-2">
-                Save these credentials — you'll need them to connect your client.
+                Save these endpoints — your client uses them to send and receive messages.
               </p>
             </div>
           )}
