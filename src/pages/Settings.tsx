@@ -94,8 +94,7 @@ const Settings = () => {
     toast.success("Copied to clipboard");
   };
 
-  const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-  const registerUrl = `https://${projectId}.supabase.co/functions/v1/register`;
+  const registerUrl = activeInstance ? `${activeInstance.url}/functions/v1/register` : "";
 
   return (
     <SidebarProvider>
