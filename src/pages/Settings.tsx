@@ -155,40 +155,44 @@ const Settings = () => {
                 </Button>
 
                 {newlyCreatedToken && (
-                  <div className="mt-4 p-4 rounded-lg border border-primary/30 bg-primary/5 space-y-3">
-                    <p className="text-sm font-medium text-primary">New token created — copy it now!</p>
-                    <div className="flex items-center gap-2">
-                      <code className="flex-1 text-xs bg-sidebar p-2 rounded font-mono break-all text-sidebar-foreground">
-                        {newlyCreatedToken}
-                      </code>
-                      <Button size="icon" variant="outline" onClick={() => copyToClipboard(newlyCreatedToken)}>
-                        <Copy className="h-4 w-4" />
+                  <div className="mt-4 rounded-lg border border-primary/30 bg-primary/5 overflow-hidden">
+                    <div className="px-4 pt-3 pb-2">
+                      <p className="text-sm font-medium text-primary">New token created — copy it now!</p>
+                    </div>
+                    <div className="relative group mx-3 mb-3 rounded-md border bg-background">
+                      <pre className="text-xs p-3 pr-10 font-mono overflow-x-auto whitespace-pre-wrap break-all text-foreground leading-relaxed select-all">{newlyCreatedToken}</pre>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="absolute top-1.5 right-1.5 h-7 w-7 opacity-60 hover:opacity-100"
+                        onClick={() => copyToClipboard(newlyCreatedToken)}
+                        title="Copy token"
+                      >
+                        <Copy className="h-3.5 w-3.5" />
                       </Button>
                     </div>
-                    <div className="space-y-2">
-                      <p className="text-xs text-muted-foreground">
-                        Run in a terminal from any folder where you want <code className="bg-muted px-1 rounded">./client</code> created. Copy
-                        the block below — your token is already filled in.
+                    <div className="px-4 pb-2">
+                      <p className="text-xs text-muted-foreground mb-2">
+                        Install &amp; register — run from any folder:
                       </p>
-                      <div className="relative rounded-md border bg-muted/50">
-                        <pre className="text-xs p-3 pr-11 font-mono overflow-x-auto whitespace-pre break-all">{`curl -fsSL ${appOrigin}/install-cli.sh | bash -s -- ${appOrigin}\ncd client\nREGISTER_URL="${registerUrl}" node cli-client.js ${newlyCreatedToken}`}</pre>
-                        <Button
-                          type="button"
-                          size="icon"
-                          variant="ghost"
-                          className="absolute top-2 right-2 h-8 w-8 shrink-0"
-                          onClick={() =>
-                            copyToClipboard(
-                              `curl -fsSL ${appOrigin}/install-cli.sh | bash -s -- ${appOrigin}
-cd client
-REGISTER_URL="${registerUrl}" node cli-client.js ${newlyCreatedToken}`,
-                            )
-                          }
-                          title="Copy install + register commands"
-                        >
-                          <Copy className="h-4 w-4" />
-                        </Button>
-                      </div>
+                    </div>
+                    <div className="relative group mx-3 mb-3 rounded-md border bg-background">
+                      <pre className="text-xs p-3 pr-10 font-mono overflow-x-auto whitespace-pre-wrap break-words text-foreground leading-relaxed">{`curl -fsSL ${appOrigin}/install-cli.sh | bash -s -- ${appOrigin}\ncd client\nREGISTER_URL="${registerUrl}" node cli-client.js ${newlyCreatedToken}`}</pre>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="absolute top-1.5 right-1.5 h-7 w-7 opacity-60 hover:opacity-100"
+                        onClick={() =>
+                          copyToClipboard(
+                            `curl -fsSL ${appOrigin}/install-cli.sh | bash -s -- ${appOrigin}\ncd client\nREGISTER_URL="${registerUrl}" node cli-client.js ${newlyCreatedToken}`,
+                          )
+                        }
+                        title="Copy install commands"
+                      >
+                        <Copy className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+                    <div className="px-4 pb-3">
                       <p className="text-xs text-muted-foreground">
                         Or register in the browser:{" "}
                         <a href={registerUrl} className="text-primary underline break-all">
@@ -213,24 +217,53 @@ REGISTER_URL="${registerUrl}" node cli-client.js ${newlyCreatedToken}`,
                   <p className="text-sm text-muted-foreground">No tokens yet</p>
                 ) : (
                   <div className="space-y-3">
-                    {tokens.map((t) => (
-                      <div
-                        key={t.id}
-                        className="flex items-center justify-between p-3 rounded-lg border bg-card"
-                      >
-                        <div className="space-y-1 min-w-0 flex-1">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <span className="text-sm font-medium truncate">
-                              {t.label || "Unlabeled"}
-                            </span>
-                            <Badge variant={t.used ? "secondary" : "default"}>
-                              {t.used ? "Used" : "Available"}
-                            </Badge>
-                            <Badge variant="outline">{t.token_type === "one_time" ? "One-time" : "Expiry"}</Badge>
+                    {tokens.map((t) => {
+                      const installCmd = `curl -fsSL ${appOrigin}/install-cli.sh | bash -s -- ${appOrigin}\ncd client\nREGISTER_URL="${registerUrl}" node cli-client.js ${t.token}`;
+                      return (
+                        <div
+                          key={t.id}
+                          className="p-3 rounded-lg border bg-card space-y-2"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 flex-wrap min-w-0">
+                              <span className="text-sm font-medium truncate">
+                                {t.label || "Unlabeled"}
+                              </span>
+                              <Badge variant={t.used ? "secondary" : "default"}>
+                                {t.used ? "Used" : "Available"}
+                              </Badge>
+                              <Badge variant="outline">{t.token_type === "one_time" ? "One-time" : "Expiry"}</Badge>
+                            </div>
+                            <Button size="icon" variant="ghost" onClick={() => deleteToken(t.id)} title="Delete token">
+                              <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
                           </div>
-                          <p className="text-xs text-muted-foreground font-mono truncate">
-                            {t.token.slice(0, 16)}...
-                          </p>
+                          <div className="relative group rounded-md border bg-background">
+                            <pre className="text-xs p-2 pr-9 font-mono break-all whitespace-pre-wrap text-foreground select-all">{t.token}</pre>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              className="absolute top-1 right-1 h-7 w-7 opacity-60 hover:opacity-100"
+                              onClick={() => copyToClipboard(t.token)}
+                              title="Copy token"
+                            >
+                              <Copy className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
+                          {!t.used && (
+                            <div className="relative group rounded-md border bg-background">
+                              <pre className="text-xs p-2 pr-9 font-mono break-words whitespace-pre-wrap text-muted-foreground leading-relaxed">{installCmd}</pre>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="absolute top-1 right-1 h-7 w-7 opacity-60 hover:opacity-100"
+                                onClick={() => copyToClipboard(installCmd)}
+                                title="Copy install commands"
+                              >
+                                <Copy className="h-3.5 w-3.5" />
+                              </Button>
+                            </div>
+                          )}
                           {t.client_id && (
                             <p className="text-xs text-muted-foreground">
                               Client ID: <span className="font-mono">{t.client_id}</span>
@@ -242,16 +275,8 @@ REGISTER_URL="${registerUrl}" node cli-client.js ${newlyCreatedToken}`,
                             </p>
                           )}
                         </div>
-                        <div className="flex items-center gap-1 ml-2">
-                          <Button size="icon" variant="ghost" onClick={() => copyToClipboard(t.token)}>
-                            <Copy className="h-4 w-4" />
-                          </Button>
-                          <Button size="icon" variant="ghost" onClick={() => deleteToken(t.id)}>
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </CardContent>
