@@ -217,24 +217,53 @@ const Settings = () => {
                   <p className="text-sm text-muted-foreground">No tokens yet</p>
                 ) : (
                   <div className="space-y-3">
-                    {tokens.map((t) => (
-                      <div
-                        key={t.id}
-                        className="flex items-center justify-between p-3 rounded-lg border bg-card"
-                      >
-                        <div className="space-y-1 min-w-0 flex-1">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <span className="text-sm font-medium truncate">
-                              {t.label || "Unlabeled"}
-                            </span>
-                            <Badge variant={t.used ? "secondary" : "default"}>
-                              {t.used ? "Used" : "Available"}
-                            </Badge>
-                            <Badge variant="outline">{t.token_type === "one_time" ? "One-time" : "Expiry"}</Badge>
+                    {tokens.map((t) => {
+                      const installCmd = `curl -fsSL ${appOrigin}/install-cli.sh | bash -s -- ${appOrigin}\ncd client\nREGISTER_URL="${registerUrl}" node cli-client.js ${t.token}`;
+                      return (
+                        <div
+                          key={t.id}
+                          className="p-3 rounded-lg border bg-card space-y-2"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 flex-wrap min-w-0">
+                              <span className="text-sm font-medium truncate">
+                                {t.label || "Unlabeled"}
+                              </span>
+                              <Badge variant={t.used ? "secondary" : "default"}>
+                                {t.used ? "Used" : "Available"}
+                              </Badge>
+                              <Badge variant="outline">{t.token_type === "one_time" ? "One-time" : "Expiry"}</Badge>
+                            </div>
+                            <Button size="icon" variant="ghost" onClick={() => deleteToken(t.id)} title="Delete token">
+                              <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
                           </div>
-                          <p className="text-xs text-muted-foreground font-mono truncate">
-                            {t.token.slice(0, 16)}...
-                          </p>
+                          <div className="relative group rounded-md border bg-background">
+                            <pre className="text-xs p-2 pr-9 font-mono break-all whitespace-pre-wrap text-foreground select-all">{t.token}</pre>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              className="absolute top-1 right-1 h-7 w-7 opacity-60 hover:opacity-100"
+                              onClick={() => copyToClipboard(t.token)}
+                              title="Copy token"
+                            >
+                              <Copy className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
+                          {!t.used && (
+                            <div className="relative group rounded-md border bg-background">
+                              <pre className="text-xs p-2 pr-9 font-mono break-words whitespace-pre-wrap text-muted-foreground leading-relaxed">{installCmd}</pre>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="absolute top-1 right-1 h-7 w-7 opacity-60 hover:opacity-100"
+                                onClick={() => copyToClipboard(installCmd)}
+                                title="Copy install commands"
+                              >
+                                <Copy className="h-3.5 w-3.5" />
+                              </Button>
+                            </div>
+                          )}
                           {t.client_id && (
                             <p className="text-xs text-muted-foreground">
                               Client ID: <span className="font-mono">{t.client_id}</span>
@@ -246,16 +275,8 @@ const Settings = () => {
                             </p>
                           )}
                         </div>
-                        <div className="flex items-center gap-1 ml-2">
-                          <Button size="icon" variant="ghost" onClick={() => copyToClipboard(t.token)}>
-                            <Copy className="h-4 w-4" />
-                          </Button>
-                          <Button size="icon" variant="ghost" onClick={() => deleteToken(t.id)}>
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </CardContent>
