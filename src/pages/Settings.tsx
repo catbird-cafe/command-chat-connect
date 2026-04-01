@@ -11,19 +11,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useRealtimePresence } from "@/hooks/useRealtimePresence";
 import { Copy, Plus, Trash2, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
-import { useSupabaseClient, useInstances } from "@/contexts/InstanceContext";
-
-interface TokenRecord {
-  id: string;
-  token: string;
-  label: string | null;
-  token_type: string;
-  expires_at: string | null;
-  used: boolean;
-  used_at: string | null;
-  client_id: string | null;
-  created_at: string;
-}
+import { useInstances } from "@/contexts/InstanceContext";
+import type { TokenRecord } from "@/lib/datastore";
 
 const Settings = () => {
   const navigate = useNavigate();
