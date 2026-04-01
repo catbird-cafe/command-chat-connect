@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useRealtimePresence } from "@/hooks/useRealtimePresence";
 import { Copy, Plus, Trash2, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { useSupabaseClient, useInstances } from "@/contexts/InstanceContext";
 
 interface TokenRecord {
   id: string;
