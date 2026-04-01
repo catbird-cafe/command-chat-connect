@@ -25,9 +25,8 @@ const docs = [
 │  └──────┬──────┘  └────┬─────┘  └─────┬──────┘ │
 │         │              │              │         │
 │         ▼              ▼              ▼         │
-│    Supabase Realtime          Edge Functions     │
-│    (Presence + Broadcast)     (manage-tokens,    │
-│                                register)         │
+│    Realtime            Realtime       Registration│
+│    (Presence)          (Broadcast)    Endpoint    │
 └─────────────────────────────────────────────────┘
            ▲                        ▲
            │  WebSocket             │  HTTPS
@@ -35,28 +34,28 @@ const docs = [
 ┌──────────┴────────────────────────┴──────────────┐
 │                  CLI Client                       │
 │  1. POST /register → gets creds                   │
-│  2. Joins "chat-lobby" (presence)                  │
-│  3. Joins "chat:<id>" (broadcast)                  │
+│  2. Joins lobby (presence)                         │
+│  3. Joins chat channel (broadcast)                 │
 │  4. stdin → send, stdout ← receive                 │
 └───────────────────────────────────────────────────┘
 \`\`\`
 
 ## Components
 
-| Component | Tech | Purpose |
-|-----------|------|---------|
-| Web Dashboard | React + Vite + Tailwind | Host UI for managing clients and chatting |
-| CLI Client | Node.js + supabase-js + ws | Terminal-based chat participant |
-| Realtime Presence | Supabase Realtime | Tracks online CLI clients |
-| Realtime Broadcast | Supabase Realtime | Per-client chat messages |
-| Edge Functions | Deno | Token management & registration |
+| Component | Purpose |
+|-----------|---------|
+| Web Dashboard | Host UI for managing clients and chatting |
+| CLI Client | Terminal-based chat participant |
+| Realtime Presence | Tracks online CLI clients |
+| Realtime Broadcast | Per-client chat messages |
+| Registration Endpoint | Token exchange for client credentials |
 
 ## Data Flow
 
 1. Host logs in with a display name
 2. Host generates a registration token in Settings
-3. CLI client calls \`/register\` with the token
-4. CLI receives \`{ supabase_url, supabase_anon_key, client_id }\`
+3. CLI client calls the registration endpoint with the token
+4. CLI receives connection credentials + a client_id
 5. CLI connects to Realtime → appears in sidebar
 6. Host clicks client → opens broadcast channel
 7. Both sides exchange messages
