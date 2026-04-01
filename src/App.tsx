@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard.tsx";
 import Settings from "./pages/Settings.tsx";
 import Instances from "./pages/Instances.tsx";
 import Docs from "./pages/Docs.tsx";
+import Register from "./pages/Register.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
             <Route path="/settings" element={<Settings />} />
             <Route path="/instances" element={<Instances />} />
             <Route path="/docs" element={<Docs />} />
+            <Route path="/register" element={<Register />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
