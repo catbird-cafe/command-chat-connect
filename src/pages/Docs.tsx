@@ -93,7 +93,7 @@ While the app is served (local dev or production), you can install the CLI **wit
 \`\`\`bash
 curl -fsSL ${appOrigin}/install-cli.sh | bash -s -- ${appOrigin}
 cd client
-REGISTER_URL="${registerUrl}" node cli-client.js <token>
+REGISTER_URL="${registerApiUrl}" node cli-client.js <token>
 \`\`\`
 
 The first line creates \`client/\` **in your current directory**, downloads \`/cli-client/*\` into it, and runs \`npm install\` there. Override the install path with \`INSTALL_DIR\`. If you already ran the installer, skip the \`curl\` line and only run \`cd client\` and the \`node\` line. Requires **curl**, **Node.js 18+**, and **npm**.
