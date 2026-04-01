@@ -197,3 +197,9 @@ const shutdown = async () => {
 
 process.on("SIGINT", shutdown);
 process.on("SIGTERM", shutdown);
+}
+
+main().catch((err) => {
+  console.error("[init] Fatal:", err.message);
+  process.exit(1);
+});
