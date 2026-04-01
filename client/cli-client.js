@@ -25,13 +25,12 @@ function loadStoredCreds() {
   return normalizeCreds(JSON.parse(fs.readFileSync(CREDS_FILE, "utf8")));
 }
 
-function resolveTransport() {
+function resolveWebSocket() {
   try {
-    const ws = require("ws");
-    return ws;
+    return require("ws");
   } catch {
     if (typeof WebSocket !== "undefined") return WebSocket;
-    console.error("No WebSocket transport. From the client/ directory run: npm install ws");
+    console.error("No WebSocket implementation. From the client/ directory run: npm install ws");
     process.exit(1);
   }
 }
@@ -120,18 +119,25 @@ async function main() {
     process.exit(1);
   }
 
-  const transport = resolveTransport();
+  const WebSocketImpl = resolveWebSocket();
   console.log(`[init] Client: "${name}"`);
   console.log("[init] Connecting...");
 
+  /** Node is not a browser: default auth options (persistSession, detectSessionInUrl) break Realtime JWT handshakes. */
   const supabase = createClient(finalUrl, finalKey, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+      detectSessionInUrl: false,
+    },
     realtime: {
-      transport,
-      timeout: 10000,
+      transport: WebSocketImpl,
+      timeout: 20000,
       heartbeatIntervalMs: 15000,
-      params: { eventsPerSecond: 10 },
     },
   });
+
+  await supabase.realtime.setAuth(finalKey);
 
   let lobbyReady = false;
   let chatReady = false;
@@ -164,6 +170,7 @@ async function main() {
       for (const p of leftPresences) console.log(`[lobby] Leave: ${p.name || "unknown"}`);
     })
     .subscribe(async (status, err) => {
+      if (status !== "SUBSCRIBED") console.error("[lobby]", status, err || "");
       if (err) console.error("[lobby] Error:", err);
       if (status === "SUBSCRIBED") {
         lobbyReady = true;
@@ -181,6 +188,7 @@ async function main() {
       console.log(`[${payload.sender}] ${payload.text}`);
     })
     .subscribe((status, err) => {
+      if (status !== "SUBSCRIBED") console.error("[chat]", status, err || "");
       if (err) console.error("[chat] Error:", err);
       if (status === "SUBSCRIBED") {
         chatReady = true;
