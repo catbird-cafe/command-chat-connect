@@ -240,6 +240,11 @@ const Settings = () => {
                   <Button size="icon" variant="outline" onClick={() => copyToClipboard(registerUrl)}>
                     <Copy className="h-4 w-4" />
                   </Button>
+                  <Button size="icon" variant="outline" asChild>
+                    <a href={registerUrl} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="h-4 w-4" />
+                    </a>
+                  </Button>
                 </div>
               </CardContent>
             </Card>
