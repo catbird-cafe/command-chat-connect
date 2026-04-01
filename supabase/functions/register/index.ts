@@ -22,10 +22,10 @@ Deno.serve(async (req) => {
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const anonKey = Deno.env.get("SUPABASE_PUBLISHABLE_KEY")!;
 
     const supabase = createClient(supabaseUrl, serviceRoleKey);
 
-    // Find the token
     const { data: tokenRecord, error: fetchError } = await supabase
       .from("client_tokens")
       .select("*")
@@ -39,7 +39,6 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Check if already used (one_time)
     if (tokenRecord.token_type === "one_time" && tokenRecord.used) {
       return new Response(JSON.stringify({ error: "Token already used" }), {
         status: 401,
@@ -47,7 +46,6 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Check expiry
     if (tokenRecord.token_type === "expiry" && tokenRecord.expires_at) {
       if (new Date(tokenRecord.expires_at) < new Date()) {
         return new Response(JSON.stringify({ error: "Token expired" }), {
@@ -57,10 +55,8 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Generate a client_id
     const clientId = crypto.randomUUID().slice(0, 8);
 
-    // Mark token as used
     await supabase
       .from("client_tokens")
       .update({
@@ -70,25 +66,26 @@ Deno.serve(async (req) => {
       })
       .eq("id", tokenRecord.id);
 
-    // Return relay URL — clients never see raw Supabase creds
-    const relayUrl = `${supabaseUrl}/functions/v1/relay`;
-
+    // Clean response: ws info for direct connection + relay for HTTP fallback
     return new Response(
       JSON.stringify({
         client_id: clientId,
-        relay_url: relayUrl,
-        endpoints: {
-          send: `${relayUrl}/send`,
-          listen: `${relayUrl}/listen?client_id=${clientId}`,
-          presence: `${relayUrl}/presence`,
+        ws: {
+          url: supabaseUrl,
+          key: anonKey,
+          channels: {
+            lobby: "chat-lobby",
+            direct: `chat:${clientId}`,
+          },
         },
+        relay: `${supabaseUrl}/functions/v1/relay`,
       }),
       {
         status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       }
     );
-  } catch (err) {
+  } catch {
     return new Response(JSON.stringify({ error: "Bad request" }), {
       status: 400,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
