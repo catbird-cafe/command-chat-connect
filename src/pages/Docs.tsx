@@ -457,7 +457,14 @@ const Docs = () => {
     setShowBackToTop(false);
   }, [activeDoc]);
 
-  const currentDoc = docs.find(d => d.id === activeDoc)!;
+  const currentDoc = activeDoc ? docs.find(d => d.id === activeDoc) : null;
+  const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+  const docsApiUrl = `https://${projectId}.supabase.co/functions/v1/docs`;
+
+  const copyText = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success("Copied");
+  };
 
   return (
     <div className="h-screen flex bg-background overflow-hidden">
