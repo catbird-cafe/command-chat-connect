@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useRealtimePresence } from "@/hooks/useRealtimePresence";
-import { Copy, Plus, Trash2, ArrowLeft } from "lucide-react";
+import { Copy, Plus, Trash2, ArrowLeft, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { useInstances } from "@/contexts/InstanceContext";
 import type { TokenRecord } from "@/lib/datastore";
@@ -239,6 +239,11 @@ const Settings = () => {
                   </code>
                   <Button size="icon" variant="outline" onClick={() => copyToClipboard(registerUrl)}>
                     <Copy className="h-4 w-4" />
+                  </Button>
+                  <Button size="icon" variant="outline" asChild>
+                    <a href={registerUrl} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="h-4 w-4" />
+                    </a>
                   </Button>
                 </div>
               </CardContent>
