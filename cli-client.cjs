@@ -31,7 +31,7 @@ function resolveTransport() {
 const transport = resolveTransport();
 const realtimeEndpoint = `${SUPABASE_URL.replace(/^http/, "ws")}/realtime/v1/websocket`;
 
-console.log(`[init] Client name: \"${name}\""]`);
+console.log(`[init] Client name: "${name}"`);
 console.log(`[init] Node: ${process.version}`);
 console.log(`[init] Realtime endpoint: ${realtimeEndpoint}`);
 console.log("[init] Connecting...");
