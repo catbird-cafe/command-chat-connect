@@ -25,7 +25,7 @@ Deno.serve(async (req) => {
     /** Hosted Edge Functions inject `SUPABASE_ANON_KEY`; `SUPABASE_PUBLISHABLE_KEY` is optional/manual. */
     const anonKey =
       Deno.env.get("SUPABASE_ANON_KEY") ?? Deno.env.get("SUPABASE_PUBLISHABLE_KEY");
-    console.log("[register] anonKey present:", !!anonKey, "length:", anonKey?.length);
+    
 
     if (!anonKey) {
       return new Response(
