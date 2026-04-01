@@ -81,12 +81,14 @@ Go to **Settings** → fill in label, type, and expiry → **Generate Token**. C
 
 ### 2. Register CLI Client
 
+Go to the **/register** page on this server and paste your token, or use the CLI:
+
 \`\`\`bash
-REGISTER_URL="<registration_url>" \\
+REGISTER_URL="<this-server>/register" \\
   node cli-client.cjs <token>
 \`\`\`
 
-The registration URL is shown in **Settings** under "Registration Endpoint". The client POSTs:
+The client POSTs:
 
 \`\`\`json
 { "token": "<64-char-hex-string>" }
