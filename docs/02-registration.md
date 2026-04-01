@@ -54,7 +54,7 @@ Content-Type: application/json
 }
 ```
 
-The CLI client saves this to `~/.chat-client-creds.json` for future use.
+The CLI client saves this to `creds.json` in its `client/` directory (next to `cli-client.js`) for future use.
 
 ### 4. Subsequent Runs
 

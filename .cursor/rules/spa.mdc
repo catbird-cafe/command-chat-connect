@@ -14,7 +14,7 @@ This repository is a **single-page application**: **Vite + React + TypeScript**,
 
 ## Deployment and URLs
 
-- Use **`getRegistrationPageUrl()`** from `src/lib/utils.ts` (or `window.location.origin` + `/register`) for the registration link so it matches the **`/register`** route. **Settings** and **`/docs`** use that helper so copy-paste matches what users see in the browser.
+- Use **`getRegistrationPageUrl()`** for the **`/register`** URL in the browser **and** for CLI **`REGISTER_URL`** (same string). The SPA serves GET; **Vite dev/preview** proxy **`POST /register`** to the Supabase `register` Edge Function (`vite/register-post-proxy-plugin.ts`). Production static hosts need an equivalent POST proxy or registration will fail from the CLI.
 - **Environment**: set Supabase and other client-safe values as **`VITE_*`** in `.env` (or your host’s env); read them with **`import.meta.env.VITE_*`**.
 
 ## CLI

@@ -165,21 +165,41 @@ const Settings = () => {
                         <Copy className="h-4 w-4" />
                       </Button>
                     </div>
-                    <p className="text-xs text-muted-foreground space-y-1">
-                      <span className="block">
-                        Install CLI:{" "}
-                        <code className="bg-muted px-1 rounded break-all">
-                          curl -fsSL {appOrigin}/install-cli.sh | bash -s -- {appOrigin}
-                        </code>
-                      </span>
-                      <span className="block text-muted-foreground/90">
-                        Then register:{" "}
-                        <code className="bg-muted px-1 rounded break-all">
-                          REGISTER_URL="{registerUrl}" node cli-client.js &lt;token&gt;
-                        </code>{" "}
-                        (or open <code className="bg-muted px-1 rounded">{registerUrl}</code> in the browser)
-                      </span>
-                    </p>
+                    <div className="space-y-2">
+                      <p className="text-xs text-muted-foreground">
+                        Run in a terminal from any folder where you want <code className="bg-muted px-1 rounded">./client</code> created. Copy
+                        the block below — your token is already filled in.
+                      </p>
+                      <div className="relative rounded-md border bg-muted/50">
+                        <pre className="text-xs p-3 pr-11 font-mono overflow-x-auto whitespace-pre-wrap break-all">
+                          {`curl -fsSL ${appOrigin}/install-cli.sh | bash -s -- ${appOrigin}
+cd client
+REGISTER_URL="${registerUrl}" node cli-client.js ${newlyCreatedToken}`}
+                        </pre>
+                        <Button
+                          type="button"
+                          size="icon"
+                          variant="ghost"
+                          className="absolute top-2 right-2 h-8 w-8 shrink-0"
+                          onClick={() =>
+                            copyToClipboard(
+                              `curl -fsSL ${appOrigin}/install-cli.sh | bash -s -- ${appOrigin}
+cd client
+REGISTER_URL="${registerUrl}" node cli-client.js ${newlyCreatedToken}`,
+                            )
+                          }
+                          title="Copy install + register commands"
+                        >
+                          <Copy className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Or register in the browser:{" "}
+                        <a href={registerUrl} className="text-primary underline break-all">
+                          {registerUrl}
+                        </a>
+                      </p>
+                    </div>
                   </div>
                 )}
               </CardContent>

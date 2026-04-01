@@ -148,7 +148,7 @@ cd client
 node cli-client.js
 ```
 
-Credentials are stored in `~/.chat-client-creds.json`:
+Credentials are stored in `creds.json` next to `cli-client.js` in the CLI install directory:
 
 ```json
 {

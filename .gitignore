@@ -8,6 +8,9 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
+# CLI local credentials (next to cli-client.js)
+client/creds.json
+public/cli-client/creds.json
 dist
 dist-ssr
 *.local

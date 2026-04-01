@@ -4,7 +4,26 @@ const readline = require("node:readline");
 const fs = require("node:fs");
 const path = require("node:path");
 
-const CREDS_FILE = path.join(process.env.HOME || ".", ".chat-client-creds.json");
+/** Credentials live next to this script (the `client/` install). */
+const CREDS_FILE = path.join(__dirname, "creds.json");
+
+/** Map Edge Function register response to { client_id, url, key } for Supabase JS. */
+function normalizeCreds(raw) {
+  if (!raw || typeof raw !== "object") return null;
+  const id = raw.client_id;
+  if (raw.ws && typeof raw.ws.url === "string" && typeof raw.ws.key === "string") {
+    return { client_id: id, url: raw.ws.url, key: raw.ws.key };
+  }
+  if (typeof raw.url === "string" && typeof raw.key === "string") {
+    return { client_id: id, url: raw.url, key: raw.key };
+  }
+  return null;
+}
+
+function loadStoredCreds() {
+  if (!fs.existsSync(CREDS_FILE)) return null;
+  return normalizeCreds(JSON.parse(fs.readFileSync(CREDS_FILE, "utf8")));
+}
 
 function resolveTransport() {
   try {
@@ -20,11 +39,12 @@ function resolveTransport() {
 function printUsage() {
   console.error("Usage (run from your client/ directory — e.g. after curl install or npm install):");
   console.error("");
-  console.error("  Saved credentials (~/.chat-client-creds.json):");
+  console.error("  Saved credentials (creds.json next to cli-client.js):");
   console.error("    node cli-client.js");
   console.error("");
   console.error("  First-time registration (token from Settings):");
-  console.error("    REGISTER_URL=<register-url> node cli-client.js <token>");
+  console.error("    REGISTER_URL=<app>/register node cli-client.js <token>");
+  console.error("    (same URL as the registration page in the browser)");
   console.error("");
   console.error("  Direct (Supabase URL + anon key in env, no saved file):");
   console.error("    SUPABASE_URL=... SUPABASE_ANON_KEY=... node cli-client.js <name>");
@@ -34,10 +54,10 @@ function printUsage() {
 }
 
 async function getCredentials() {
-  if (fs.existsSync(CREDS_FILE)) {
-    const creds = JSON.parse(fs.readFileSync(CREDS_FILE, "utf8"));
-    console.log(`[init] Using saved credentials (client: ${creds.client_id})`);
-    return creds;
+  const stored = loadStoredCreds();
+  if (stored) {
+    console.log(`[init] Using saved credentials (${CREDS_FILE})`);
+    return stored;
   }
 
   const arg = process.argv[2];
@@ -72,7 +92,12 @@ async function getCredentials() {
     process.exit(1);
   }
 
-  const creds = await res.json();
+  const raw = await res.json();
+  const creds = normalizeCreds(raw);
+  if (!creds?.url || !creds?.key) {
+    console.error("[init] Registration response missing url/key (unexpected shape)");
+    process.exit(1);
+  }
   fs.writeFileSync(CREDS_FILE, JSON.stringify(creds, null, 2));
   console.log(`[init] Registered! Client ID: ${creds.client_id}`);
   console.log(`[init] Credentials saved to ${CREDS_FILE}`);
@@ -81,9 +106,12 @@ async function getCredentials() {
 
 async function main() {
   const creds = await getCredentials();
-  const { url: SUPABASE_URL, key: SUPABASE_ANON_KEY, client_id: name, supabase_url, supabase_anon_key } = creds;
-  const finalUrl = SUPABASE_URL || supabase_url;
-  const finalKey = SUPABASE_ANON_KEY || supabase_anon_key;
+  const { url: finalUrl, key: finalKey, client_id: name } = creds;
+
+  if (!finalUrl || !finalKey) {
+    console.error("[init] Fatal: saved credentials are missing url or key. Delete creds.json and register again.");
+    process.exit(1);
+  }
 
   const transport = resolveTransport();
   console.log(`[init] Client: "${name}"`);

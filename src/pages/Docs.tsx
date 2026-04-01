@@ -86,20 +86,17 @@ Go to **${registerUrl}** and paste your token, or install the CLI and register f
 
 #### Install CLI from this server (curl)
 
-While the app is served (local dev or production), you can install the CLI **without cloning the repo**. Assets are loaded from the same origin (\`${appOrigin}\`):
+While the app is served (local dev or production), you can install the CLI **without cloning the repo**. Assets are loaded from the same origin (\`${appOrigin}\`).
+
+**Copy-paste** (run from any folder where you want \`client/\` created; replace \`<token>\` with the token from Settings):
 
 \`\`\`bash
 curl -fsSL ${appOrigin}/install-cli.sh | bash -s -- ${appOrigin}
-\`\`\`
-
-This creates a \`client/\` directory **in whatever folder you run the command from**, downloads \`/cli-client/*\` into it, and runs \`npm install\` there. Override the path with \`INSTALL_DIR\`. Requires **curl**, **Node.js 18+**, and **npm**.
-
-Then register:
-
-\`\`\`bash
 cd client
 REGISTER_URL="${registerUrl}" node cli-client.js <token>
 \`\`\`
+
+The first line creates \`client/\` **in your current directory**, downloads \`/cli-client/*\` into it, and runs \`npm install\` there. Override the install path with \`INSTALL_DIR\`. If you already ran the installer, skip the \`curl\` line and only run \`cd client\` and the \`node\` line. Requires **curl**, **Node.js 18+**, and **npm**.
 
 The client POSTs:
 
@@ -117,7 +114,7 @@ The client POSTs:
 }
 \`\`\`
 
-Credentials are saved to \`~/.chat-client-creds.json\`. The client uses these automatically on subsequent runs.
+Credentials are saved to \`creds.json\` in the same directory as \`cli-client.js\` (your \`client/\` install). The client uses these automatically on subsequent runs.
 
 ### 4. Subsequent Runs
 
@@ -126,7 +123,7 @@ cd client
 node cli-client.js
 \`\`\`
 
-No token or env vars needed (credentials in \`~/.chat-client-creds.json\`).
+No token or env vars needed (credentials in \`client/creds.json\`).
 
 ## Error Responses
 
@@ -259,17 +256,26 @@ The registration page is at \`${registerUrl}\`.
 
 ## CLI Client
 
-**Install**: \`curl -fsSL ${appOrigin}/install-cli.sh | bash -s -- ${appOrigin}\` (creates \`./client\` in the current directory)
+**First-time install + register** (replace \`<token>\`):
 
-**First run**: \`cd client\` then \`REGISTER_URL=${registerUrl} node cli-client.js <token>\`
+\`\`\`bash
+curl -fsSL ${appOrigin}/install-cli.sh | bash -s -- ${appOrigin}
+cd client
+REGISTER_URL="${registerUrl}" node cli-client.js <token>
+\`\`\`
 
-**After**: \`node cli-client.js\`
+**After credentials are saved**:
+
+\`\`\`bash
+cd client
+node cli-client.js
+\`\`\`
 
 **Deps**: \`@supabase/supabase-js\`, \`ws\` (installed by the script above)
 
 **Requires**: Node.js 18+
 
-**Creds file**: \`~/.chat-client-creds.json\``,
+**Creds file**: \`creds.json\` next to \`cli-client.js\``,
   },
 ];
 }
@@ -433,6 +439,19 @@ const Docs = () => {
   const registerUrl = useMemo(() => getRegistrationPageUrl(), []);
   const appOrigin = useMemo(() => getAppOrigin(), []);
   const docs = useMemo(() => buildDocs(registerUrl, appOrigin), [registerUrl, appOrigin]);
+  const firstRunCliScript = useMemo(
+    () =>
+      `curl -fsSL ${appOrigin}/install-cli.sh | bash -s -- ${appOrigin}
+cd client
+REGISTER_URL="${registerUrl}" node cli-client.js <token>`,
+    [appOrigin, registerUrl],
+  );
+  const subsequentCliScript = useMemo(
+    () =>
+      `cd client
+node cli-client.js`,
+    [],
+  );
   const scrollRef = useRef<HTMLDivElement>(null);
   const [showBackToTop, setShowBackToTop] = useState(false);
 
@@ -545,39 +564,57 @@ const Docs = () => {
 
                 <div className="space-y-3">
                   <h2 className="text-xl font-bold text-foreground">Quick Start</h2>
-                  <ol className="list-decimal list-inside space-y-2 text-muted-foreground text-sm">
+                  <ol className="list-decimal list-inside space-y-3 text-muted-foreground text-sm">
                     <li>Generate a registration token in <strong className="text-foreground">Settings</strong></li>
                     <li>
-                      Go to{" "}
+                      Either open{" "}
                       <a href={registerUrl} className="text-primary underline font-medium break-all">
                         {registerUrl}
                       </a>{" "}
-                      and paste the token, or use the CLI
+                      in the browser and paste the token, or run the CLI in a terminal:
                     </li>
-                    <li>
-                      Install the CLI:{" "}
-                      <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono break-all block mt-1">
-                        {`curl -fsSL ${appOrigin}/install-cli.sh | bash -s -- ${appOrigin}`}
-                      </code>
-                      <span className="block text-xs text-muted-foreground mt-1">
-                        Creates <code className="bg-muted px-1 rounded">./client</code> in your current directory.
-                      </span>
-                    </li>
-                    <li>
-                      Register:{" "}
-                      <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono break-all">
-                        {`REGISTER_URL="${registerUrl}" node cli-client.js <token>`}
-                      </code>
-                      <span className="block text-xs text-muted-foreground mt-1">
-                        Run inside <code className="bg-muted px-1 rounded">./client</code> (after <code className="bg-muted px-1 rounded">cd client</code>).
-                      </span>
-                    </li>
-                    <li>
-                      Next time:{" "}
-                      <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">node cli-client.js</code>
-                    </li>
-                    <li>Start chatting!</li>
                   </ol>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-sm font-medium text-foreground">CLI — first-time (copy all lines)</span>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="shrink-0"
+                        onClick={() => copyText(firstRunCliScript)}
+                      >
+                        <Copy className="h-3.5 w-3.5 mr-1" />
+                        Copy
+                      </Button>
+                    </div>
+                    <pre className="text-xs bg-muted/80 border rounded-md p-3 font-mono overflow-x-auto whitespace-pre-wrap break-all text-foreground">
+                      {firstRunCliScript}
+                    </pre>
+                    <p className="text-xs text-muted-foreground">
+                      Replace <code className="bg-muted px-1 rounded">&lt;token&gt;</code> with your token. Run from any folder where you want{" "}
+                      <code className="bg-muted px-1 rounded">./client</code> created.
+                    </p>
+                  </div>
+                  <div className="space-y-2 pt-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-sm font-medium text-foreground">Next time (after register)</span>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="shrink-0"
+                        onClick={() => copyText(subsequentCliScript)}
+                      >
+                        <Copy className="h-3.5 w-3.5 mr-1" />
+                        Copy
+                      </Button>
+                    </div>
+                    <pre className="text-xs bg-muted/80 border rounded-md p-3 font-mono overflow-x-auto whitespace-pre-wrap break-all text-foreground">
+                      {subsequentCliScript}
+                    </pre>
+                  </div>
+                  <p className="text-sm text-muted-foreground pt-1">Start chatting from the dashboard.</p>
                 </div>
               </div>
             )}

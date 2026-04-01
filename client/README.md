@@ -4,26 +4,27 @@ Node.js client for Command Chat Connect. **End users** install with `curl` into 
 
 ## Install with curl (recommended)
 
-With the web app running, run this **from the directory where you want `client/` created** (for example your home folder or a project folder):
+With the web app running, run this **from the directory where you want `client/` created** (for example your home folder or a project folder).
+
+**Copy-paste all of the following** (replace `<token>` with the token from Settings; use your real app URL instead of the example):
 
 ```bash
 curl -fsSL https://your-app.example.com/install-cli.sh | bash -s -- https://your-app.example.com
+cd client
+REGISTER_URL="https://your-app.example.com/register" node cli-client.js <token>
 ```
 
-Local dev:
+Local dev (default Vite port):
 
 ```bash
 curl -fsSL http://localhost:8080/install-cli.sh | bash -s -- http://localhost:8080
-```
-
-That creates **`./client`** next to your shell’s current directory, downloads the CLI files into it, and runs `npm install` there. Use **`INSTALL_DIR`** to pick a different path.
-
-Then:
-
-```bash
 cd client
-REGISTER_URL="https://your-host/register" node cli-client.js <token>
+REGISTER_URL="http://localhost:8080/register" node cli-client.js <token>
 ```
+
+The `curl` line creates **`./client`** next to your shell’s current directory, downloads the CLI files into it, and runs `npm install` there. Use **`INSTALL_DIR`** to pick a different path. If you already ran the installer, skip the `curl` line and only run `cd client` and the `node` line.
+
+`REGISTER_URL` is your app’s **`/register` page URL** (same host as the dashboard). The Vite **dev** and **`vite preview`** servers accept `POST /register` and forward the body to the Supabase Edge Function. A **static file host** must provide the same POST proxy (or the CLI cannot register using only that URL).
 
 ## Requirements
 
