@@ -239,13 +239,13 @@ const Settings = () => {
 
             <Card>
               <CardHeader>
-                <CardTitle>Registration Endpoint</CardTitle>
-                <CardDescription>CLI clients POST their token here to get credentials</CardDescription>
+                <CardTitle>Registration Page</CardTitle>
+                <CardDescription>Share this URL with clients to register their tokens</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-2">
                   <code className="flex-1 text-xs bg-muted p-2 rounded font-mono break-all">
-                    POST {registerUrl}
+                    {registerUrl}
                   </code>
                   <Button size="icon" variant="outline" onClick={() => copyToClipboard(registerUrl)}>
                     <Copy className="h-4 w-4" />

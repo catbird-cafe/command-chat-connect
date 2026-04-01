@@ -526,8 +526,8 @@ const Docs = () => {
                   <h2 className="text-xl font-bold text-foreground">Quick Start</h2>
                   <ol className="list-decimal list-inside space-y-2 text-muted-foreground text-sm">
                     <li>Generate a registration token in <strong className="text-foreground">Settings</strong></li>
-                    <li>Copy the <strong className="text-foreground">Registration URL</strong> from Settings</li>
-                    <li>Run <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">REGISTER_URL=&lt;url&gt; node cli-client.cjs &lt;token&gt;</code></li>
+                    <li>Go to <strong className="text-foreground">/register</strong> and paste the token, or use the CLI</li>
+                    <li>Run <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">REGISTER_URL=&lt;this-server&gt;/register node cli-client.cjs &lt;token&gt;</code></li>
                     <li>Credentials are saved — subsequent runs just need <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">node cli-client.cjs</code></li>
                     <li>Start chatting!</li>
                   </ol>
