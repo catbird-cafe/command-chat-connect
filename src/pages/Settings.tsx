@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useRealtimePresence } from "@/hooks/useRealtimePresence";
-import { Copy, Plus, Trash2, ArrowLeft } from "lucide-react";
+import { Copy, Plus, Trash2, ArrowLeft, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { useInstances } from "@/contexts/InstanceContext";
 import type { TokenRecord } from "@/lib/datastore";
