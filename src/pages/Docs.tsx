@@ -435,7 +435,7 @@ function renderInline(text: string): React.ReactNode {
 
 const Docs = () => {
   const navigate = useNavigate();
-  const [activeDoc, setActiveDoc] = useState(docs[0].id);
+  const [activeDoc, setActiveDoc] = useState<string | null>(null);
   const hostName = localStorage.getItem("chat-host-name");
   const scrollRef = useRef<HTMLDivElement>(null);
   const [showBackToTop, setShowBackToTop] = useState(false);
