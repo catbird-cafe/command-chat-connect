@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Book, FileText, Network, Key, Code, Copy, Terminal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { cn, getAppOrigin, getRegistrationPageUrl } from "@/lib/utils";
+import { cn, getAppOrigin, getRegistrationPageUrl, getRegistrationApiUrl } from "@/lib/utils";
 import { toast } from "sonner";
 
 /** Inline docs with the deployed app URL (same origin as the dashboard). */
