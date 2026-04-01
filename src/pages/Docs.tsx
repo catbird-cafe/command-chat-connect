@@ -469,7 +469,7 @@ const Docs = () => {
     <div className="h-screen flex bg-background overflow-hidden">
       {/* Docs sidebar — fixed */}
       <div className="w-64 shrink-0 border-r bg-sidebar text-sidebar-foreground flex flex-col h-full">
-        <div className="h-12 flex items-center px-4 border-b border-sidebar-border gap-2">
+        <div className="h-12 flex items-center px-4 border-b border-sidebar-border gap-2 cursor-pointer hover:bg-sidebar-accent/30 transition-colors" onClick={() => setActiveDoc(null)}>
           <Book className="h-4 w-4 text-sidebar-primary" />
           <span className="font-semibold text-sm">Documentation</span>
         </div>
