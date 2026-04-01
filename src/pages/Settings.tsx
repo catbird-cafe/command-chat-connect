@@ -57,20 +57,24 @@ const Settings = () => {
 
   const createToken = async () => {
     setCreating(true);
-    const body: Record<string, string> = { token_type: tokenType };
-    if (label.trim()) body.label = label.trim();
-    if (tokenType === "expiry" && expiresAt) body.expires_at = new Date(expiresAt).toISOString();
+    const token = Array.from(crypto.getRandomValues(new Uint8Array(32)))
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
 
-    const { data, error } = await supabase.functions.invoke("manage-tokens", {
-      method: "POST",
-      body,
-    });
+    const record: Record<string, unknown> = {
+      token,
+      token_type: tokenType,
+      label: label.trim() || null,
+      expires_at: tokenType === "expiry" && expiresAt ? new Date(expiresAt).toISOString() : null,
+    };
+
+    const { error } = await supabase.from("client_tokens").insert(record);
 
     if (error) {
       toast.error("Failed to create token");
     } else {
       toast.success("Token created");
-      setNewlyCreatedToken(data.token);
+      setNewlyCreatedToken(token);
       setLabel("");
       setExpiresAt("");
       fetchTokens();
