@@ -66,7 +66,7 @@ async function main() {
   console.log(`[init] Client: "${name}"`);
   console.log("[init] Connecting...");
 
-  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  const supabase = createClient(finalUrl, finalKey, {
     realtime: {
       transport,
       timeout: 10000,
