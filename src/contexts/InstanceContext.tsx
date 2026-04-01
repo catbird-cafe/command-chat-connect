@@ -1,5 +1,7 @@
 import { createContext, useContext, useState, useCallback, useMemo, type ReactNode } from "react";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import type { DataStore } from "@/lib/datastore";
+import { SupabaseDataStore } from "@/lib/datastore";
 
 export interface SupabaseInstance {
   id: string;
@@ -12,6 +14,7 @@ interface InstanceContextValue {
   instances: SupabaseInstance[];
   activeInstance: SupabaseInstance | null;
   client: SupabaseClient | null;
+  store: DataStore | null;
   addInstance: (instance: Omit<SupabaseInstance, "id">) => SupabaseInstance;
   updateInstance: (id: string, data: Partial<Omit<SupabaseInstance, "id">>) => void;
   removeInstance: (id: string) => void;
@@ -118,12 +121,18 @@ export function InstanceProvider({ children }: { children: ReactNode }) {
     return createClient(activeInstance.url, activeInstance.anonKey);
   }, [activeInstance?.id, activeInstance?.url, activeInstance?.anonKey]);
 
+  const store = useMemo(() => {
+    if (!client || !activeInstance) return null;
+    return new SupabaseDataStore(client, activeInstance.url);
+  }, [client, activeInstance?.url]);
+
   return (
     <InstanceContext.Provider
       value={{
         instances,
         activeInstance,
         client,
+        store,
         addInstance,
         updateInstance,
         removeInstance,
