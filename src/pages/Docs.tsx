@@ -437,6 +437,23 @@ const Docs = () => {
   const navigate = useNavigate();
   const [activeDoc, setActiveDoc] = useState(docs[0].id);
   const hostName = localStorage.getItem("chat-host-name");
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [showBackToTop, setShowBackToTop] = useState(false);
+
+  const handleScroll = useCallback(() => {
+    const el = scrollRef.current;
+    if (el) setShowBackToTop(el.scrollTop > 300);
+  }, []);
+
+  const scrollToTop = () => {
+    scrollRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // Reset scroll on doc change
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ top: 0 });
+    setShowBackToTop(false);
+  }, [activeDoc]);
 
   const currentDoc = docs.find(d => d.id === activeDoc)!;
 
