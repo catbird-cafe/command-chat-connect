@@ -88,6 +88,7 @@ const Settings = () => {
   };
 
   const registerUrl = getRegistrationPageUrl();
+  const registerApiUrl = getRegistrationApiUrl();
   const appOrigin = getAppOrigin();
 
   return (
