@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Book, FileText, Network, Key, Code } from "lucide-react";
+import { ArrowLeft, Book, FileText, Network, Key, Code, Copy, Terminal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 // Inline the docs content so the app is self-documenting without a build step
 const docs = [
@@ -435,7 +436,7 @@ function renderInline(text: string): React.ReactNode {
 
 const Docs = () => {
   const navigate = useNavigate();
-  const [activeDoc, setActiveDoc] = useState(docs[0].id);
+  const [activeDoc, setActiveDoc] = useState<string | null>(null);
   const hostName = localStorage.getItem("chat-host-name");
   const scrollRef = useRef<HTMLDivElement>(null);
   const [showBackToTop, setShowBackToTop] = useState(false);
@@ -455,13 +456,20 @@ const Docs = () => {
     setShowBackToTop(false);
   }, [activeDoc]);
 
-  const currentDoc = docs.find(d => d.id === activeDoc)!;
+  const currentDoc = activeDoc ? docs.find(d => d.id === activeDoc) : null;
+  const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+  const docsApiUrl = `https://${projectId}.supabase.co/functions/v1/docs`;
+
+  const copyText = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success("Copied");
+  };
 
   return (
     <div className="h-screen flex bg-background overflow-hidden">
       {/* Docs sidebar — fixed */}
       <div className="w-64 shrink-0 border-r bg-sidebar text-sidebar-foreground flex flex-col h-full">
-        <div className="h-12 flex items-center px-4 border-b border-sidebar-border gap-2">
+        <div className="h-12 flex items-center px-4 border-b border-sidebar-border gap-2 cursor-pointer hover:bg-sidebar-accent/30 transition-colors" onClick={() => setActiveDoc(null)}>
           <Book className="h-4 w-4 text-sidebar-primary" />
           <span className="font-semibold text-sm">Documentation</span>
         </div>
@@ -501,13 +509,85 @@ const Docs = () => {
       <div className="flex-1 flex flex-col min-h-0 relative">
         <header className="h-12 flex items-center px-6 border-b">
           <div className="flex items-center gap-2">
-            <currentDoc.icon className="h-5 w-5 text-primary" />
-            <h1 className="text-lg font-bold text-foreground">{currentDoc.title}</h1>
+            {currentDoc ? (
+              <>
+                <currentDoc.icon className="h-5 w-5 text-primary" />
+                <h1 className="text-lg font-bold text-foreground">{currentDoc.title}</h1>
+              </>
+            ) : (
+              <>
+                <Terminal className="h-5 w-5 text-primary" />
+                <h1 className="text-lg font-bold text-foreground">Building a Client</h1>
+              </>
+            )}
           </div>
         </header>
         <div ref={scrollRef} onScroll={handleScroll} className="flex-1 overflow-y-auto">
           <div className="max-w-3xl p-6">
-            {renderMarkdown(currentDoc.content)}
+            {currentDoc ? (
+              renderMarkdown(currentDoc.content)
+            ) : (
+              <div className="space-y-6">
+                <p className="text-muted-foreground leading-relaxed">
+                  This server is self-documenting. You can read the docs here in the browser, or fetch them programmatically to build a client.
+                </p>
+
+                <div className="space-y-3">
+                  <h2 className="text-xl font-bold text-foreground">Programmatic Access</h2>
+                  <p className="text-muted-foreground text-sm">
+                    Agents and scripts can fetch structured documentation from the API:
+                  </p>
+
+                  <div className="space-y-2">
+                    {[
+                      { label: "All docs (JSON)", cmd: `curl ${docsApiUrl}` },
+                      { label: "All docs (Markdown)", cmd: `curl "${docsApiUrl}?format=markdown"` },
+                      { label: "Single section", cmd: `curl "${docsApiUrl}?section=registration"` },
+                    ].map((item) => (
+                      <div key={item.label} className="rounded-lg border bg-card p-3">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-xs font-medium text-muted-foreground">{item.label}</span>
+                          <button onClick={() => copyText(item.cmd)} className="text-muted-foreground hover:text-foreground">
+                            <Copy className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                        <code className="text-xs font-mono text-foreground break-all">{item.cmd}</code>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <h2 className="text-xl font-bold text-foreground">Available Sections</h2>
+                  <p className="text-muted-foreground text-sm">Click any section in the sidebar, or use <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">?section=id</code> in the API:</p>
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    {docs.map((doc) => (
+                      <button
+                        key={doc.id}
+                        onClick={() => setActiveDoc(doc.id)}
+                        className="flex items-center gap-3 p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors text-left"
+                      >
+                        <doc.icon className="h-5 w-5 text-primary shrink-0" />
+                        <div>
+                          <span className="text-sm font-medium text-foreground">{doc.title}</span>
+                          <p className="text-xs text-muted-foreground font-mono">?section={doc.id}</p>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <h2 className="text-xl font-bold text-foreground">Quick Start</h2>
+                  <ol className="list-decimal list-inside space-y-2 text-muted-foreground text-sm">
+                    <li>Generate a registration token in <strong className="text-foreground">Settings</strong></li>
+                    <li>Run <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">REGISTER_URL=&lt;url&gt; node cli-client.js &lt;token&gt;</code></li>
+                    <li>Credentials are saved — subsequent runs just need <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">node cli-client.js</code></li>
+                    <li>Start chatting!</li>
+                  </ol>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
