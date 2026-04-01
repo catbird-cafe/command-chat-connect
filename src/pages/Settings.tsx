@@ -83,10 +83,7 @@ const Settings = () => {
   };
 
   const deleteToken = async (id: string) => {
-    const { error } = await supabase.functions.invoke("manage-tokens", {
-      method: "DELETE",
-      body: { id },
-    });
+    const { error } = await supabase.from("client_tokens").delete().eq("id", id);
     if (error) toast.error("Failed to delete");
     else {
       toast.success("Token deleted");
