@@ -74,8 +74,8 @@ Deno.serve(async (req) => {
     return new Response(
       JSON.stringify({
         client_id: clientId,
-        supabase_url: supabaseUrl,
-        supabase_anon_key: anonKey,
+        url: supabaseUrl,
+        key: anonKey,
       }),
       {
         status: 200,
