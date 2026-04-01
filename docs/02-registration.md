@@ -24,7 +24,11 @@ Click **Generate Token**. Copy the token string.
 
 ### 2. Register the CLI Client
 
+**Curl installer** (app must be running; run from the folder where you want a **`client/`** directory):
+
 ```bash
+curl -fsSL https://<your-app-host>/install-cli.sh | bash -s -- https://<your-app-host>
+cd client
 REGISTER_URL="https://<project_id>.supabase.co/functions/v1/register" \
   node cli-client.js <token>
 ```
@@ -55,6 +59,7 @@ The CLI client saves this to `~/.chat-client-creds.json` for future use.
 ### 4. Subsequent Runs
 
 ```bash
+cd client
 node cli-client.js
 ```
 

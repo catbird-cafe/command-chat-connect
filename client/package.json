@@ -1,0 +1,11 @@
+{
+  "name": "command-chat-cli",
+  "private": true,
+  "scripts": {
+    "cli": "node cli-client.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.101.1",
+    "ws": "^8.20.0"
+  }
+}

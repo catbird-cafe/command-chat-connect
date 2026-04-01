@@ -4,6 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "sync-cli-public": "node scripts/sync-cli-public.mjs",
+    "predev": "npm run sync-cli-public",
+    "prebuild": "npm run sync-cli-public",
     "dev": "vite",
     "build": "vite build",
     "build:dev": "vite build --mode development",

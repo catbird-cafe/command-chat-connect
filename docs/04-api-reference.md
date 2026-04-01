@@ -130,9 +130,13 @@ Delete a token.
 
 ## CLI Client
 
+See **`client/README.md`**. **Curl** the installer from your deployed app (`/install-cli.sh`); it creates **`./client`** in the current directory.
+
 ### First Run (Registration)
 
 ```bash
+curl -fsSL https://<your-app-host>/install-cli.sh | bash -s -- https://<your-app-host>
+cd client
 REGISTER_URL="https://<project_id>.supabase.co/functions/v1/register" \
   node cli-client.js <token>
 ```
@@ -140,6 +144,7 @@ REGISTER_URL="https://<project_id>.supabase.co/functions/v1/register" \
 ### Subsequent Runs
 
 ```bash
+cd client
 node cli-client.js
 ```
 
@@ -155,8 +160,4 @@ Credentials are stored in `~/.chat-client-creds.json`:
 
 ### Dependencies
 
-```bash
-npm install @supabase/supabase-js ws
-```
-
-Requires Node.js 18+ (for native `fetch`).
+The curl installer runs **`npm install`** inside **`./client`**. Requires Node.js 18+ (for native `fetch`) and **curl**.

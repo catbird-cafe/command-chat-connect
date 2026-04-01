@@ -13,7 +13,7 @@ import { Copy, Plus, Trash2, ArrowLeft, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { useInstances } from "@/contexts/InstanceContext";
 import type { TokenRecord } from "@/lib/datastore";
-import { getRegistrationPageUrl } from "@/lib/utils";
+import { getAppOrigin, getRegistrationPageUrl } from "@/lib/utils";
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -88,6 +88,7 @@ const Settings = () => {
   };
 
   const registerUrl = getRegistrationPageUrl();
+  const appOrigin = getAppOrigin();
 
   return (
     <SidebarProvider>
@@ -164,8 +165,20 @@ const Settings = () => {
                         <Copy className="h-4 w-4" />
                       </Button>
                     </div>
-                    <p className="text-xs text-muted-foreground">
-                      Register at <code className="bg-muted px-1 rounded">{registerUrl}</code> or use the CLI: <code className="bg-muted px-1 rounded">REGISTER_URL="{registerUrl}" node cli-client.cjs {newlyCreatedToken.slice(0, 8)}...</code>
+                    <p className="text-xs text-muted-foreground space-y-1">
+                      <span className="block">
+                        Install CLI:{" "}
+                        <code className="bg-muted px-1 rounded break-all">
+                          curl -fsSL {appOrigin}/install-cli.sh | bash -s -- {appOrigin}
+                        </code>
+                      </span>
+                      <span className="block text-muted-foreground/90">
+                        Then register:{" "}
+                        <code className="bg-muted px-1 rounded break-all">
+                          REGISTER_URL="{registerUrl}" node cli-client.js &lt;token&gt;
+                        </code>{" "}
+                        (or open <code className="bg-muted px-1 rounded">{registerUrl}</code> in the browser)
+                      </span>
                     </p>
                   </div>
                 )}

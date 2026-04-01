@@ -12,9 +12,25 @@ function resolveTransport() {
     return ws;
   } catch {
     if (typeof WebSocket !== "undefined") return WebSocket;
-    console.error("No WebSocket transport. Run: npm install ws");
+    console.error("No WebSocket transport. From the client/ directory run: npm install ws");
     process.exit(1);
   }
+}
+
+function printUsage() {
+  console.error("Usage (run from your client/ directory — e.g. after curl install or npm install):");
+  console.error("");
+  console.error("  Saved credentials (~/.chat-client-creds.json):");
+  console.error("    node cli-client.js");
+  console.error("");
+  console.error("  First-time registration (token from Settings):");
+  console.error("    REGISTER_URL=<register-url> node cli-client.js <token>");
+  console.error("");
+  console.error("  Direct (Supabase URL + anon key in env, no saved file):");
+  console.error("    SUPABASE_URL=... SUPABASE_ANON_KEY=... node cli-client.js <name>");
+  console.error("");
+  console.error("Install: curl <app>/install-cli.sh | bash -s -- <app>   (creates ./client)");
+  console.error("     or: ./install.sh | npm install   (when developing the CLI in a repo)");
 }
 
 async function getCredentials() {
@@ -24,15 +40,22 @@ async function getCredentials() {
     return creds;
   }
 
-  const token = process.argv[2];
+  const arg = process.argv[2];
+  const directUrl = process.env.SUPABASE_URL;
+  const directKey = process.env.SUPABASE_ANON_KEY;
   const registerUrl = process.env.REGISTER_URL;
 
-  if (!token || !registerUrl) {
-    console.error("First run — register with a token:");
-    console.error("  REGISTER_URL=<url> node cli-client.js <token>");
-    console.error("");
-    console.error("After registration, credentials are saved and you can just run:");
-    console.error("  node cli-client.js");
+  if (directUrl && directKey && arg) {
+    console.log("[init] Direct mode: using SUPABASE_URL / SUPABASE_ANON_KEY from environment");
+    return {
+      url: directUrl,
+      key: directKey,
+      client_id: arg,
+    };
+  }
+
+  if (!arg || !registerUrl) {
+    printUsage();
     process.exit(1);
   }
 
@@ -40,7 +63,7 @@ async function getCredentials() {
   const res = await fetch(registerUrl, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ token }),
+    body: JSON.stringify({ token: arg }),
   });
 
   if (!res.ok) {

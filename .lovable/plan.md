@@ -46,12 +46,12 @@ Simple username prompt stored in localStorage. No Supabase Auth — just a displ
 - Visual distinction between host and client messages
 
 ### 6. Provide CLI client script
-A standalone Node.js script (`cli-client.js`) that:
-- Takes a client name as argument
+A standalone Node.js script in `client/` (`cli-client.js`; install via `client/install.sh`) that:
+- Takes a client name as argument (direct mode) or registers via token
 - Uses `@supabase/supabase-js` to join the lobby channel with presence
 - Joins its own `chat:{name}` channel
 - Reads stdin for messages, broadcasts them, prints received messages to stdout
-- User runs: `SUPABASE_URL=... SUPABASE_ANON_KEY=... node cli-client.js myname`
+- User runs (direct) from `client/`: `SUPABASE_URL=... SUPABASE_ANON_KEY=... node cli-client.js myname`
 
 ### Files to create/modify
 - `src/pages/Login.tsx` — username prompt
@@ -62,7 +62,7 @@ A standalone Node.js script (`cli-client.js`) that:
 - `src/hooks/useRealtimeChat.ts` — per-client broadcast hook
 - `src/lib/supabase.ts` — Supabase client init
 - `src/App.tsx` — add routes
-- `/cli-client.js` — Node.js CLI script (provided in chat, not in the app)
+- `client/cli-client.js` + `client/install.sh` — Node.js CLI and shell installer
 
 ### Technical details
 - Supabase Realtime channels with `channel.on('broadcast', ...)` for messages

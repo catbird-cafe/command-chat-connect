@@ -3,11 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Book, FileText, Network, Key, Code, Copy, Terminal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { cn, getRegistrationPageUrl } from "@/lib/utils";
+import { cn, getAppOrigin, getRegistrationPageUrl } from "@/lib/utils";
 import { toast } from "sonner";
 
 /** Inline docs with the deployed app URL (same origin as the dashboard). */
-function buildDocs(registerUrl: string) {
+function buildDocs(registerUrl: string, appOrigin: string) {
   return [
   {
     id: "architecture",
@@ -82,11 +82,23 @@ Go to **Settings** → fill in label, type, and expiry → **Generate Token**. C
 
 ### 2. Register CLI Client
 
-Go to **${registerUrl}** and paste your token, or use the CLI:
+Go to **${registerUrl}** and paste your token, or install the CLI and register from the shell.
+
+#### Install CLI from this server (curl)
+
+While the app is served (local dev or production), you can install the CLI **without cloning the repo**. Assets are loaded from the same origin (\`${appOrigin}\`):
 
 \`\`\`bash
-REGISTER_URL="${registerUrl}" \\
-  node cli-client.cjs <token>
+curl -fsSL ${appOrigin}/install-cli.sh | bash -s -- ${appOrigin}
+\`\`\`
+
+This creates a \`client/\` directory **in whatever folder you run the command from**, downloads \`/cli-client/*\` into it, and runs \`npm install\` there. Override the path with \`INSTALL_DIR\`. Requires **curl**, **Node.js 18+**, and **npm**.
+
+Then register:
+
+\`\`\`bash
+cd client
+REGISTER_URL="${registerUrl}" node cli-client.js <token>
 \`\`\`
 
 The client POSTs:
@@ -110,10 +122,11 @@ Credentials are saved to \`~/.chat-client-creds.json\`. The client uses these au
 ### 4. Subsequent Runs
 
 \`\`\`bash
+cd client
 node cli-client.js
 \`\`\`
 
-No token or env vars needed.
+No token or env vars needed (credentials in \`~/.chat-client-creds.json\`).
 
 ## Error Responses
 
@@ -246,11 +259,13 @@ The registration page is at \`${registerUrl}\`.
 
 ## CLI Client
 
-**First run**: \`REGISTER_URL=${registerUrl} node cli-client.cjs <token>\`
+**Install**: \`curl -fsSL ${appOrigin}/install-cli.sh | bash -s -- ${appOrigin}\` (creates \`./client\` in the current directory)
 
-**After**: \`node cli-client.cjs\`
+**First run**: \`cd client\` then \`REGISTER_URL=${registerUrl} node cli-client.js <token>\`
 
-**Deps**: \`npm install @supabase/supabase-js ws\`
+**After**: \`node cli-client.js\`
+
+**Deps**: \`@supabase/supabase-js\`, \`ws\` (installed by the script above)
 
 **Requires**: Node.js 18+
 
@@ -416,7 +431,8 @@ const Docs = () => {
   const [activeDoc, setActiveDoc] = useState<string | null>(null);
   const hostName = localStorage.getItem("chat-host-name");
   const registerUrl = useMemo(() => getRegistrationPageUrl(), []);
-  const docs = useMemo(() => buildDocs(registerUrl), [registerUrl]);
+  const appOrigin = useMemo(() => getAppOrigin(), []);
+  const docs = useMemo(() => buildDocs(registerUrl, appOrigin), [registerUrl, appOrigin]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [showBackToTop, setShowBackToTop] = useState(false);
 
@@ -539,12 +555,27 @@ const Docs = () => {
                       and paste the token, or use the CLI
                     </li>
                     <li>
-                      Run{" "}
-                      <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono break-all">
-                        {`REGISTER_URL="${registerUrl}" node cli-client.cjs <token>`}
+                      Install the CLI:{" "}
+                      <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono break-all block mt-1">
+                        {`curl -fsSL ${appOrigin}/install-cli.sh | bash -s -- ${appOrigin}`}
                       </code>
+                      <span className="block text-xs text-muted-foreground mt-1">
+                        Creates <code className="bg-muted px-1 rounded">./client</code> in your current directory.
+                      </span>
                     </li>
-                    <li>Credentials are saved — subsequent runs just need <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">node cli-client.cjs</code></li>
+                    <li>
+                      Register:{" "}
+                      <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono break-all">
+                        {`REGISTER_URL="${registerUrl}" node cli-client.js <token>`}
+                      </code>
+                      <span className="block text-xs text-muted-foreground mt-1">
+                        Run inside <code className="bg-muted px-1 rounded">./client</code> (after <code className="bg-muted px-1 rounded">cd client</code>).
+                      </span>
+                    </li>
+                    <li>
+                      Next time:{" "}
+                      <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">node cli-client.js</code>
+                    </li>
                     <li>Start chatting!</li>
                   </ol>
                 </div>
