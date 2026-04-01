@@ -7,7 +7,7 @@ import { cn, getAppOrigin, getRegistrationPageUrl, getRegistrationApiUrl } from 
 import { toast } from "sonner";
 
 /** Inline docs with the deployed app URL (same origin as the dashboard). */
-function buildDocs(registerUrl: string, appOrigin: string) {
+function buildDocs(registerUrl: string, registerApiUrl: string, appOrigin: string) {
   return [
   {
     id: "architecture",
