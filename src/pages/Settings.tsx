@@ -171,11 +171,7 @@ const Settings = () => {
                         the block below — your token is already filled in.
                       </p>
                       <div className="relative rounded-md border bg-muted/50">
-                        <pre className="text-xs p-3 pr-11 font-mono overflow-x-auto whitespace-pre-wrap break-all">
-                          {`curl -fsSL ${appOrigin}/install-cli.sh | bash -s -- ${appOrigin}
-cd client
-REGISTER_URL="${registerUrl}" node cli-client.js ${newlyCreatedToken}`}
-                        </pre>
+                        <pre className="text-xs p-3 pr-11 font-mono overflow-x-auto whitespace-pre break-all">{`curl -fsSL ${appOrigin}/install-cli.sh | bash -s -- ${appOrigin}\ncd client\nREGISTER_URL="${registerUrl}" node cli-client.js ${newlyCreatedToken}`}</pre>
                         <Button
                           type="button"
                           size="icon"
