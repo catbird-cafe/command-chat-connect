@@ -245,9 +245,9 @@ The registration URL is displayed in **Settings** → **Registration Endpoint**.
 
 ## CLI Client
 
-**First run**: \`REGISTER_URL=<url> node cli-client.js <token>\`
+**First run**: \`REGISTER_URL=<this-server>/register node cli-client.cjs <token>\`
 
-**After**: \`node cli-client.js\`
+**After**: \`node cli-client.cjs\`
 
 **Deps**: \`npm install @supabase/supabase-js ws\`
 
