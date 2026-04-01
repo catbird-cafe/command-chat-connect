@@ -219,7 +219,7 @@ const Settings = () => {
                 ) : (
                   <div className="space-y-3">
                     {tokens.map((t) => {
-                      const installCmd = `curl -fsSL ${appOrigin}/install-cli.sh | bash -s -- ${appOrigin}\ncd client\nREGISTER_URL="${registerUrl}" node cli-client.js ${t.token}`;
+                      const installCmd = `curl -fsSL ${appOrigin}/install-cli.sh | bash -s -- ${appOrigin}\ncd client\nREGISTER_URL="${registerApiUrl}" node cli-client.js ${t.token}`;
                       return (
                         <div
                           key={t.id}
