@@ -205,46 +205,19 @@ CLI Client                         Web Dashboard
     id: "api-reference",
     title: "API Reference",
     icon: Code,
-    content: `## Edge Functions
+    content: `## Registration Endpoint
 
-### POST \`/functions/v1/register\`
+### POST \`/register\`
 
-Exchange a token for credentials.
+Exchange a token for connection credentials.
 
 **Request**: \`{ "token": "string" }\`
 
-**200**: \`{ "client_id", "supabase_url", "supabase_anon_key" }\`
+**200**: \`{ "client_id", "url", "key" }\`
 
 **Errors**: 400 (missing token), 401 (invalid/used/expired)
 
----
-
-### GET \`/functions/v1/manage-tokens\`
-
-List all tokens. Returns array of token records.
-
----
-
-### POST \`/functions/v1/manage-tokens\`
-
-Create a token.
-
-**Request**:
-\`\`\`json
-{
-  "label": "optional string",
-  "token_type": "one_time | expiry",
-  "expires_at": "ISO 8601 (if expiry)"
-}
-\`\`\`
-
-**201**: Returns the created token record.
-
----
-
-### DELETE \`/functions/v1/manage-tokens\`
-
-Delete a token. **Request**: \`{ "id": "uuid" }\`
+The registration URL is displayed in **Settings** → **Registration Endpoint**.
 
 ---
 
