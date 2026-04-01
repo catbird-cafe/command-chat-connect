@@ -45,7 +45,25 @@ export function registerPostProxyPlugin(supabaseUrl: string, supabaseAnonKey: st
             headers,
             body,
           });
-          const text = await r.text();
+          let text = await r.text();
+          // Older / misconfigured Edge deployments omit ws.key when anon env is missing (JSON drops undefined).
+          // The publishable key is already public in the SPA; inject so CLI registration matches Settings copy-paste.
+          if (anon && r.ok) {
+            try {
+              const data = JSON.parse(text) as Record<string, unknown>;
+              const ws = data.ws as Record<string, unknown> | undefined;
+              if (
+                ws &&
+                typeof ws.url === "string" &&
+                (typeof ws.key !== "string" || ws.key === "")
+              ) {
+                ws.key = anon;
+                text = JSON.stringify(data);
+              }
+            } catch {
+              /* pass through raw body */
+            }
+          }
           res.statusCode = r.status;
           const ct = r.headers.get("content-type");
           if (ct) res.setHeader("Content-Type", ct);
