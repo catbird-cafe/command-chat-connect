@@ -437,14 +437,15 @@ const Docs = () => {
   const [activeDoc, setActiveDoc] = useState<string | null>(null);
   const hostName = localStorage.getItem("chat-host-name");
   const registerUrl = useMemo(() => getRegistrationPageUrl(), []);
+  const registerApiUrl = useMemo(() => getRegistrationApiUrl(), []);
   const appOrigin = useMemo(() => getAppOrigin(), []);
-  const docs = useMemo(() => buildDocs(registerUrl, appOrigin), [registerUrl, appOrigin]);
+  const docs = useMemo(() => buildDocs(registerUrl, registerApiUrl, appOrigin), [registerUrl, registerApiUrl, appOrigin]);
   const firstRunCliScript = useMemo(
     () =>
       `curl -fsSL ${appOrigin}/install-cli.sh | bash -s -- ${appOrigin}
 cd client
-REGISTER_URL="${registerUrl}" node cli-client.js <token>`,
-    [appOrigin, registerUrl],
+REGISTER_URL="${registerApiUrl}" node cli-client.js <token>`,
+    [appOrigin, registerApiUrl],
   );
   const subsequentCliScript = useMemo(
     () =>
