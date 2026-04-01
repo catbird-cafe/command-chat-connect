@@ -96,7 +96,7 @@ const Settings = () => {
     toast.success("Copied to clipboard");
   };
 
-  const registerUrl = activeInstance ? `${activeInstance.url}/functions/v1/register` : "";
+  const registerUrl = `${window.location.origin}/register`;
 
   return (
     <SidebarProvider>
@@ -174,7 +174,7 @@ const Settings = () => {
                       </Button>
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      CLI usage: <code className="bg-muted px-1 rounded">curl -X POST {registerUrl} -H "Content-Type: application/json" -d '{`{"token":"${newlyCreatedToken}"}`}'</code>
+                      Register at <code className="bg-muted px-1 rounded">{registerUrl}</code> or use the CLI: <code className="bg-muted px-1 rounded">REGISTER_URL="{registerUrl}" node cli-client.cjs {newlyCreatedToken.slice(0, 8)}...</code>
                     </p>
                   </div>
                 )}
@@ -239,13 +239,13 @@ const Settings = () => {
 
             <Card>
               <CardHeader>
-                <CardTitle>Registration Endpoint</CardTitle>
-                <CardDescription>CLI clients POST their token here to get credentials</CardDescription>
+                <CardTitle>Registration Page</CardTitle>
+                <CardDescription>Share this URL with clients to register their tokens</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-2">
                   <code className="flex-1 text-xs bg-muted p-2 rounded font-mono break-all">
-                    POST {registerUrl}
+                    {registerUrl}
                   </code>
                   <Button size="icon" variant="outline" onClick={() => copyToClipboard(registerUrl)}>
                     <Copy className="h-4 w-4" />
