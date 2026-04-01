@@ -1,15 +1,55 @@
 #!/usr/bin/env node
 const { createClient } = require("@supabase/supabase-js");
 const readline = require("node:readline");
+const fs = require("node:fs");
+const path = require("node:path");
 
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
-const name = process.argv[2];
+const CREDS_FILE = path.join(process.env.HOME || ".", ".chat-client-creds.json");
 
-if (!SUPABASE_URL || !SUPABASE_ANON_KEY || !name) {
-  console.error("Usage: SUPABASE_URL=... SUPABASE_ANON_KEY=... node cli-client.cjs <name>");
-  process.exit(1);
+async function getCredentials() {
+  // If creds file exists, use it
+  if (fs.existsSync(CREDS_FILE)) {
+    const creds = JSON.parse(fs.readFileSync(CREDS_FILE, "utf8"));
+    console.log(`[init] Using saved credentials (client: ${creds.client_id})`);
+    return creds;
+  }
+
+  // Otherwise, register with a token
+  const token = process.argv[2];
+  const registerUrl = process.env.REGISTER_URL;
+
+  if (!token || !registerUrl) {
+    console.error("First run — register with a token:");
+    console.error("  REGISTER_URL=<url> node cli-client.js <token>");
+    console.error("");
+    console.error("After registration, credentials are saved and you can just run:");
+    console.error("  node cli-client.js");
+    process.exit(1);
+  }
+
+  console.log("[init] Registering with token...");
+  const res = await fetch(registerUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    console.error(`[init] Registration failed: ${err.error || res.statusText}`);
+    process.exit(1);
+  }
+
+  const creds = await res.json();
+  fs.writeFileSync(CREDS_FILE, JSON.stringify(creds, null, 2));
+  console.log(`[init] Registered! Client ID: ${creds.client_id}`);
+  console.log(`[init] Credentials saved to ${CREDS_FILE}`);
+  return creds;
 }
+
+async function main() {
+  const creds = await getCredentials();
+  const { supabase_url: SUPABASE_URL, supabase_anon_key: SUPABASE_ANON_KEY, client_id: name } = creds;
 
 function resolveTransport() {
   try {
