@@ -13,7 +13,7 @@ import { Copy, Plus, Trash2, ArrowLeft, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { useInstances } from "@/contexts/InstanceContext";
 import type { TokenRecord } from "@/lib/datastore";
-import { getAppOrigin, getRegistrationPageUrl } from "@/lib/utils";
+import { getAppOrigin, getRegistrationPageUrl, getRegistrationApiUrl } from "@/lib/utils";
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -88,6 +88,7 @@ const Settings = () => {
   };
 
   const registerUrl = getRegistrationPageUrl();
+  const registerApiUrl = getRegistrationApiUrl();
   const appOrigin = getAppOrigin();
 
   return (
@@ -177,14 +178,14 @@ const Settings = () => {
                       </p>
                     </div>
                     <div className="relative group mx-3 mb-3 rounded-md border bg-background">
-                      <pre className="text-xs p-3 pr-10 font-mono overflow-x-auto whitespace-pre-wrap break-words text-foreground leading-relaxed">{`curl -fsSL ${appOrigin}/install-cli.sh | bash -s -- ${appOrigin}\ncd client\nREGISTER_URL="${registerUrl}" node cli-client.js ${newlyCreatedToken}`}</pre>
+                      <pre className="text-xs p-3 pr-10 font-mono overflow-x-auto whitespace-pre-wrap break-words text-foreground leading-relaxed">{`curl -fsSL ${appOrigin}/install-cli.sh | bash -s -- ${appOrigin}\ncd client\nREGISTER_URL="${registerApiUrl}" node cli-client.js ${newlyCreatedToken}`}</pre>
                       <Button
                         size="icon"
                         variant="ghost"
                         className="absolute top-1.5 right-1.5 h-7 w-7 opacity-60 hover:opacity-100"
                         onClick={() =>
                           copyToClipboard(
-                            `curl -fsSL ${appOrigin}/install-cli.sh | bash -s -- ${appOrigin}\ncd client\nREGISTER_URL="${registerUrl}" node cli-client.js ${newlyCreatedToken}`,
+                            `curl -fsSL ${appOrigin}/install-cli.sh | bash -s -- ${appOrigin}\ncd client\nREGISTER_URL="${registerApiUrl}" node cli-client.js ${newlyCreatedToken}`,
                           )
                         }
                         title="Copy install commands"
@@ -218,7 +219,7 @@ const Settings = () => {
                 ) : (
                   <div className="space-y-3">
                     {tokens.map((t) => {
-                      const installCmd = `curl -fsSL ${appOrigin}/install-cli.sh | bash -s -- ${appOrigin}\ncd client\nREGISTER_URL="${registerUrl}" node cli-client.js ${t.token}`;
+                      const installCmd = `curl -fsSL ${appOrigin}/install-cli.sh | bash -s -- ${appOrigin}\ncd client\nREGISTER_URL="${registerApiUrl}" node cli-client.js ${t.token}`;
                       return (
                         <div
                           key={t.id}

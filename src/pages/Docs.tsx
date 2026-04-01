@@ -3,11 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Book, FileText, Network, Key, Code, Copy, Terminal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { cn, getAppOrigin, getRegistrationPageUrl } from "@/lib/utils";
+import { cn, getAppOrigin, getRegistrationPageUrl, getRegistrationApiUrl } from "@/lib/utils";
 import { toast } from "sonner";
 
 /** Inline docs with the deployed app URL (same origin as the dashboard). */
-function buildDocs(registerUrl: string, appOrigin: string) {
+function buildDocs(registerUrl: string, registerApiUrl: string, appOrigin: string) {
   return [
   {
     id: "architecture",
@@ -93,7 +93,7 @@ While the app is served (local dev or production), you can install the CLI **wit
 \`\`\`bash
 curl -fsSL ${appOrigin}/install-cli.sh | bash -s -- ${appOrigin}
 cd client
-REGISTER_URL="${registerUrl}" node cli-client.js <token>
+REGISTER_URL="${registerApiUrl}" node cli-client.js <token>
 \`\`\`
 
 The first line creates \`client/\` **in your current directory**, downloads \`/cli-client/*\` into it, and runs \`npm install\` there. Override the install path with \`INSTALL_DIR\`. If you already ran the installer, skip the \`curl\` line and only run \`cd client\` and the \`node\` line. Requires **curl**, **Node.js 18+**, and **npm**.
@@ -261,7 +261,7 @@ The registration page is at \`${registerUrl}\`.
 \`\`\`bash
 curl -fsSL ${appOrigin}/install-cli.sh | bash -s -- ${appOrigin}
 cd client
-REGISTER_URL="${registerUrl}" node cli-client.js <token>
+REGISTER_URL="${registerApiUrl}" node cli-client.js <token>
 \`\`\`
 
 **After credentials are saved**:
@@ -437,14 +437,15 @@ const Docs = () => {
   const [activeDoc, setActiveDoc] = useState<string | null>(null);
   const hostName = localStorage.getItem("chat-host-name");
   const registerUrl = useMemo(() => getRegistrationPageUrl(), []);
+  const registerApiUrl = useMemo(() => getRegistrationApiUrl(), []);
   const appOrigin = useMemo(() => getAppOrigin(), []);
-  const docs = useMemo(() => buildDocs(registerUrl, appOrigin), [registerUrl, appOrigin]);
+  const docs = useMemo(() => buildDocs(registerUrl, registerApiUrl, appOrigin), [registerUrl, registerApiUrl, appOrigin]);
   const firstRunCliScript = useMemo(
     () =>
       `curl -fsSL ${appOrigin}/install-cli.sh | bash -s -- ${appOrigin}
 cd client
-REGISTER_URL="${registerUrl}" node cli-client.js <token>`,
-    [appOrigin, registerUrl],
+REGISTER_URL="${registerApiUrl}" node cli-client.js <token>`,
+    [appOrigin, registerApiUrl],
   );
   const subsequentCliScript = useMemo(
     () =>
