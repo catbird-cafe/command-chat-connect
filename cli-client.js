@@ -58,7 +58,9 @@ async function getCredentials() {
 
 async function main() {
   const creds = await getCredentials();
-  const { supabase_url: SUPABASE_URL, supabase_anon_key: SUPABASE_ANON_KEY, client_id: name } = creds;
+  const { url: SUPABASE_URL, key: SUPABASE_ANON_KEY, client_id: name, supabase_url, supabase_anon_key } = creds;
+  const finalUrl = SUPABASE_URL || supabase_url;
+  const finalKey = SUPABASE_ANON_KEY || supabase_anon_key;
 
   const transport = resolveTransport();
   console.log(`[init] Client: "${name}"`);
