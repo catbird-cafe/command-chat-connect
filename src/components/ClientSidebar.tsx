@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Monitor, Circle, Settings, LogOut, ChevronUp } from "lucide-react";
+import { Monitor, Circle, Settings, LogOut, ChevronUp, Book } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -87,6 +87,10 @@ export function ClientSidebar({ clients, activeClient, onSelectClient }: ClientS
                 <DropdownMenuItem onClick={() => navigate("/settings")} className="cursor-pointer">
                   <Settings className="h-4 w-4 mr-2" />
                   Settings
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/docs")} className="cursor-pointer">
+                  <Book className="h-4 w-4 mr-2" />
+                  Documentation
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive">
