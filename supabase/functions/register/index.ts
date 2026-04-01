@@ -22,7 +22,6 @@ Deno.serve(async (req) => {
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const anonKey = Deno.env.get("SUPABASE_PUBLISHABLE_KEY")!;
 
     const supabase = createClient(supabaseUrl, serviceRoleKey);
 
@@ -71,11 +70,18 @@ Deno.serve(async (req) => {
       })
       .eq("id", tokenRecord.id);
 
+    // Return relay URL — clients never see raw Supabase creds
+    const relayUrl = `${supabaseUrl}/functions/v1/relay`;
+
     return new Response(
       JSON.stringify({
         client_id: clientId,
-        url: supabaseUrl,
-        key: anonKey,
+        relay_url: relayUrl,
+        endpoints: {
+          send: `${relayUrl}/send`,
+          listen: `${relayUrl}/listen?client_id=${clientId}`,
+          presence: `${relayUrl}/presence`,
+        },
       }),
       {
         status: 200,

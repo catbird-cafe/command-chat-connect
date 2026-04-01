@@ -6,12 +6,13 @@ import { Label } from "@/components/ui/label";
 import { Copy, CheckCircle, AlertCircle, Terminal } from "lucide-react";
 import { toast } from "sonner";
 import { useInstances } from "@/contexts/InstanceContext";
+import type { RegisterResult } from "@/lib/datastore";
 
 const Register = () => {
   const { store } = useInstances();
   const [token, setToken] = useState("");
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<{ client_id: string; url: string; key: string } | null>(null);
+  const [result, setResult] = useState<RegisterResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleRegister = async () => {
@@ -82,8 +83,10 @@ const Register = () => {
 
               {[
                 { label: "Client ID", value: result.client_id },
-                { label: "URL", value: result.url },
-                { label: "Key", value: result.key },
+                { label: "Relay URL", value: result.relay_url },
+                { label: "Send", value: result.endpoints.send },
+                { label: "Listen", value: result.endpoints.listen },
+                { label: "Presence", value: result.endpoints.presence },
               ].map((field) => (
                 <div key={field.label} className="space-y-1">
                   <span className="text-xs text-muted-foreground">{field.label}</span>
@@ -99,7 +102,7 @@ const Register = () => {
               ))}
 
               <p className="text-xs text-muted-foreground mt-2">
-                Save these credentials — you'll need them to connect your client.
+                Save these endpoints — your client uses them to send and receive messages.
               </p>
             </div>
           )}
