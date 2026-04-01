@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Monitor, Circle, Settings, LogOut, ChevronUp } from "lucide-react";
+import { Monitor, Circle, Settings, LogOut, ChevronUp, Book } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
