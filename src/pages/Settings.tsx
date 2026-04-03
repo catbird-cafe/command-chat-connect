@@ -112,7 +112,50 @@ const Settings = () => {
           </header>
 
           <div className="flex-1 overflow-auto p-6 max-w-3xl space-y-6">
-            {/* Install the Client */}
+            {/* Display Name */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Display Name</CardTitle>
+                <CardDescription>
+                  {profile?.google_name ? `Google name: ${profile.google_name}` : "Set your display name"}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {editingName ? (
+                  <div className="flex items-center gap-2">
+                    <Input
+                      value={nameInput}
+                      onChange={(e) => setNameInput(e.target.value)}
+                      className="max-w-xs"
+                      autoFocus
+                    />
+                    <Button
+                      size="icon"
+                      variant="outline"
+                      onClick={async () => {
+                        try {
+                          await updateDisplayName(nameInput.trim());
+                          toast.success("Display name updated");
+                          setEditingName(false);
+                        } catch {
+                          toast.error("Failed to update name");
+                        }
+                      }}
+                    >
+                      <Check className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium">{displayName}</span>
+                    <Button size="icon" variant="ghost" onClick={() => { setNameInput(displayName); setEditingName(true); }}>
+                      <Pencil className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
             <Card>
               <CardHeader>
                 <CardTitle>Install the Client</CardTitle>
