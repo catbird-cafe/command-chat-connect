@@ -31,11 +31,11 @@ interface ClientSidebarProps {
 
 export function ClientSidebar({ clients, activeClient, onSelectClient }: ClientSidebarProps) {
   const navigate = useNavigate();
-  const hostName = localStorage.getItem("chat-host-name") || "Host";
+  const { displayName, signOut } = useAuth();
   const { activeInstance } = useInstances();
 
-  const handleLogout = () => {
-    localStorage.removeItem("chat-host-name");
+  const handleLogout = async () => {
+    await signOut();
     navigate("/");
   };
 
