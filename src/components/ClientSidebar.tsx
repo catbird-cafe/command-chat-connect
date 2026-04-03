@@ -87,10 +87,10 @@ export function ClientSidebar({ clients, activeClient, onSelectClient }: ClientS
                 <SidebarMenuButton className="cursor-pointer">
                   <Avatar className="h-6 w-6">
                     <AvatarFallback className="text-xs bg-primary text-primary-foreground">
-                      {hostName.charAt(0).toUpperCase()}
+                      {displayName.charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="truncate">{hostName}</span>
+                  <span className="truncate">{displayName}</span>
                   <ChevronUp className="ml-auto h-4 w-4" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
