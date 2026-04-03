@@ -18,7 +18,7 @@ import { getAppOrigin, getRegistrationPageUrl, getRegistrationApiUrl } from "@/l
 
 const Settings = () => {
   const navigate = useNavigate();
-  const hostName = localStorage.getItem("chat-host-name") || "";
+  const { profile, displayName, updateDisplayName } = useAuth();
   const clients = useRealtimePresence();
   const { activeInstance, store } = useInstances();
 
@@ -29,11 +29,12 @@ const Settings = () => {
   const [tokenType, setTokenType] = useState("one_time");
   const [expiresAt, setExpiresAt] = useState("");
   const [newlyCreatedToken, setNewlyCreatedToken] = useState<string | null>(null);
+  const [editingName, setEditingName] = useState(false);
+  const [nameInput, setNameInput] = useState(displayName);
 
   useEffect(() => {
-    if (!hostName) navigate("/");
-    else fetchTokens();
-  }, [hostName, navigate]);
+    fetchTokens();
+  }, []);
 
   const fetchTokens = async () => {
     if (!store) return;
