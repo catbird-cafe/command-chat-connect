@@ -1,20 +1,45 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Terminal } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { lovable } from "@/integrations/lovable/index";
+import { useEffect } from "react";
 
 const Login = () => {
-  const [username, setUsername] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { user, loading: authLoading } = useAuth();
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    const name = username.trim();
-    if (!name) return;
-    localStorage.setItem("chat-host-name", name);
-    navigate("/dashboard");
+  useEffect(() => {
+    if (user) navigate("/dashboard", { replace: true });
+  }, [user, navigate]);
+
+  const handleGoogleLogin = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await lovable.auth.signInWithOAuth("google", {
+        redirect_uri: window.location.origin,
+      });
+      if (result.error) {
+        setError(result.error.message || "Sign in failed");
+      }
+      if (result.redirected) return;
+    } catch (e) {
+      setError("Sign in failed");
+    }
+    setLoading(false);
   };
+
+  if (authLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <p className="text-sm text-muted-foreground">Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background">
@@ -27,22 +52,22 @@ const Login = () => {
             Chat Dashboard
           </h1>
           <p className="text-sm text-muted-foreground">
-            Enter your name to start hosting
+            Sign in with Google to start hosting
           </p>
         </div>
 
-        <form onSubmit={handleLogin} className="space-y-4">
-          <Input
-            placeholder="Your display name"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            autoFocus
-            className="h-12 text-base"
-          />
-          <Button type="submit" className="w-full h-12 text-base font-semibold">
-            Enter Dashboard
+        <div className="space-y-4">
+          <Button
+            onClick={handleGoogleLogin}
+            disabled={loading}
+            className="w-full h-12 text-base font-semibold"
+          >
+            {loading ? "Signing in..." : "Sign in with Google"}
           </Button>
-        </form>
+          {error && (
+            <p className="text-sm text-center text-destructive">{error}</p>
+          )}
+        </div>
       </div>
     </div>
   );

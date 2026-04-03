@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Monitor, Circle, Settings, LogOut, ChevronUp, Book, Server } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   Sidebar,
   SidebarContent,
@@ -30,11 +31,11 @@ interface ClientSidebarProps {
 
 export function ClientSidebar({ clients, activeClient, onSelectClient }: ClientSidebarProps) {
   const navigate = useNavigate();
-  const hostName = localStorage.getItem("chat-host-name") || "Host";
+  const { displayName, signOut } = useAuth();
   const { activeInstance } = useInstances();
 
-  const handleLogout = () => {
-    localStorage.removeItem("chat-host-name");
+  const handleLogout = async () => {
+    await signOut();
     navigate("/");
   };
 
@@ -86,10 +87,10 @@ export function ClientSidebar({ clients, activeClient, onSelectClient }: ClientS
                 <SidebarMenuButton className="cursor-pointer">
                   <Avatar className="h-6 w-6">
                     <AvatarFallback className="text-xs bg-primary text-primary-foreground">
-                      {hostName.charAt(0).toUpperCase()}
+                      {displayName.charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="truncate">{hostName}</span>
+                  <span className="truncate">{displayName}</span>
                   <ChevronUp className="ml-auto h-4 w-4" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
