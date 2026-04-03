@@ -17,8 +17,8 @@ export function getRegistrationPageUrl(): string {
   return `${window.location.origin}/register`;
 }
 
-/** API endpoint for CLI registration (edge function). */
+/** API endpoint for CLI registration (same origin, proxied to edge function). */
 export function getRegistrationApiUrl(): string {
-  const supabaseUrl = (import.meta as any).env?.VITE_SUPABASE_URL ?? "";
-  return supabaseUrl ? `${supabaseUrl.replace(/\/$/, "")}/functions/v1/register` : "";
+  if (typeof window === "undefined") return "";
+  return `${window.location.origin}/register`;
 }
