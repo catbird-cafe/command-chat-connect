@@ -1,21 +1,16 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { ClientSidebar } from "@/components/ClientSidebar";
 import { ChatView } from "@/components/ChatView";
 import { useRealtimePresence } from "@/hooks/useRealtimePresence";
 import { useRealtimeChat } from "@/hooks/useRealtimeChat";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Dashboard = () => {
-  const navigate = useNavigate();
-  const hostName = localStorage.getItem("chat-host-name") || "";
+  const { displayName } = useAuth();
   const [activeClient, setActiveClient] = useState<string | null>(null);
   const clients = useRealtimePresence();
-  const { messages, sendMessage } = useRealtimeChat(activeClient, hostName);
-
-  useEffect(() => {
-    if (!hostName) navigate("/");
-  }, [hostName, navigate]);
+  const { messages, sendMessage } = useRealtimeChat(activeClient, displayName);
 
   return (
     <SidebarProvider>
@@ -31,7 +26,7 @@ const Dashboard = () => {
           </header>
           <ChatView
             clientName={activeClient}
-            hostName={hostName}
+            hostName={displayName}
             messages={messages}
             onSend={sendMessage}
           />

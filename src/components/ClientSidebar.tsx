@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Monitor, Circle, Settings, LogOut, ChevronUp, Book, Server } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   Sidebar,
   SidebarContent,
