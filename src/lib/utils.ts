@@ -17,8 +17,8 @@ export function getRegistrationPageUrl(): string {
   return `${window.location.origin}/register`;
 }
 
-/** API endpoint for CLI registration (proxied through the app origin). */
+/** API endpoint for CLI registration (same origin, proxied to edge function). */
 export function getRegistrationApiUrl(): string {
   if (typeof window === "undefined") return "";
-  return `${window.location.origin}/api/register`;
+  return `${window.location.origin}/register`;
 }
